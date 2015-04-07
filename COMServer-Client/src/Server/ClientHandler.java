@@ -25,19 +25,21 @@ public class ClientHandler extends Thread{
     int packetPort;
     InetAddress packetAdress;
     int currentLabel;
+    Clients clients;
             
     
-    public ClientHandler(int firstLabel,int port,DatagramPacket packet) throws SocketException{
+    public ClientHandler(int firstLabel,int port,DatagramPacket packet,Clients clients) throws SocketException{
         this.port = port;
         socket = new DatagramSocket(port);
         packetPort = packet.getPort();
         packetAdress = packet.getAddress();
         this.currentLabel = firstLabel;
+        this.clients = clients;
         
     }
     
     public void run(){
-       byte[] data = PDU.toBytes(REPLY_Builder.REPLY_HELLO(currentLabel));
+       byte[] data = PDU.toBytes(REPLY_Builder.REPLY_OK(currentLabel));
        DatagramPacket packet = new DatagramPacket(data, data.length, packetAdress, packetPort);
         try {
             socket.send(packet);
@@ -71,22 +73,40 @@ public class ClientHandler extends Thread{
     }
     
     public PDU parsePDU(PDU requestPDU){
-        switch(requestPDU.getType()){
-            case 2:{//register
-                byte[][] fields= requestPDU.getData();
-                String name;
-                String nick;
-                byte[] password;
-                
-                return null;
+        byte[][] fields= requestPDU.getData();
+        if(fields!=null){
+            switch(requestPDU.getType()){
+                case 2:{//register
+
+                    String name  = new String(fields[0]);
+                    String nick = new String(fields[1]);
+                    byte[] password = fields[2];
+
+                    boolean ok = clients.registerClient(name,nick,password);
+
+                    if(!ok)//return erro
+                        return null;
+                    //return register reply
+                    return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
+                }
+                case 3:{//login
+                    String nick = new String(fields[0]);
+                    byte[] password = fields[1];
+                    
+                    int ok = clients.login(port,nick,password);
+                    
+                    if(ok== -1)
+                        //return erro password errada
+                    if(ok== -2)
+                        //username nao existe
+                        
+                    return null;                   
+                }   
+                case 4:{//logout
+
+                }
             }
-            case 3:{//login
-                
-            }
-            case 4:{//logout
-            
-            }
-        }
+       }
         return null;
     }
     

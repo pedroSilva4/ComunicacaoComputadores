@@ -31,12 +31,14 @@ public class Server {
      * @param args the command line arguments
      */
     private static  int threadPort;
+    
     private static Map<Integer,ClientHandler> connectionsMap;
     public static void main(String[] args) throws SocketException, IOException {
         // TODO code application logic here
         threadPort = 5001;
         connectionsMap = new HashMap<>();
-        new ServerHelloHandler().start();
+        Clients clients = new Clients();
+        new ServerHelloHandler(clients).start();
     }
     
     static class ServerHelloHandler extends Thread{
@@ -44,8 +46,10 @@ public class Server {
         int port = 5000;
         
         DatagramSocket socket;
-        public ServerHelloHandler() throws SocketException, IOException{
+        Clients clients;
+        public ServerHelloHandler(Clients clients) throws SocketException, IOException{
             socket = new DatagramSocket(port);
+            this.clients = clients;
         }
         
         public void run(){
@@ -63,7 +67,7 @@ public class Server {
                   System.out.println(message.toString());
                   
                   //recebe hello
-                  connectionsMap.put(threadPort, new ClientHandler(firstLabel,threadPort,packet));
+                  connectionsMap.put(threadPort, new ClientHandler(firstLabel,threadPort,packet,clients));
                   
                   //inicia a thread do cliente no servidor
                   connectionsMap.get(threadPort).start();
