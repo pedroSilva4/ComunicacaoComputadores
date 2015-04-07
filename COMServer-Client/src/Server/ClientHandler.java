@@ -42,14 +42,52 @@ public class ClientHandler extends Thread{
         try {
             socket.send(packet);
             
-            
+            boolean logout = false;
             //currentLabel incrementa toma sempre o valor do PDU recebido pelo servidor, 
             //pois o servidor so faz reply, e os reply tens a mesma label que as mensagens dos clientes
+            DatagramPacket request,reply;
             
+            while(!logout){
+              request = new DatagramPacket(new byte[256],256,packetAdress,packetPort);  
+              
+              socket.receive(request);
+              
+              PDU requestPDU = PDU.fromBytes(request.getData());
+             
+              PDU replyPDU  = parsePDU(requestPDU);
+              if(replyPDU!= null){
+                if(replyPDU.getType()==4) logout=true;
+
+                byte[] replyData = PDU.toBytes(replyPDU);
+                reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
+                socket.send(reply);
+              }
+            }
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            socket.close();
         }
-        
-        socket.close();
     }
+    
+    public PDU parsePDU(PDU requestPDU){
+        switch(requestPDU.getType()){
+            case 2:{//register
+                byte[][] fields= requestPDU.getData();
+                String name;
+                String nick;
+                byte[] password;
+                
+                return null;
+            }
+            case 3:{//login
+                
+            }
+            case 4:{//logout
+            
+            }
+        }
+        return null;
+    }
+    
 }

@@ -91,5 +91,9 @@ public class PDU implements Serializable{
         return this.id;
     }
     
+    public byte[][] getData(){
+        return this.data;
+    }
+    
     
 }
