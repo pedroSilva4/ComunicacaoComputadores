@@ -36,7 +36,7 @@ public final class PDU_Builder {
     }    
     static public PDU LOGIN_PDU(String nick,byte[] password,int label){
         int size = 0;
-        byte[][] data = new byte[3][];
+        byte[][] data = new byte[2][];
         data[0] = nick.getBytes();
         size+= data[0].length;
         data[1] = password;
