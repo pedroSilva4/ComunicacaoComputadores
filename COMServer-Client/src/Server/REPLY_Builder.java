@@ -150,8 +150,5 @@ public class REPLY_Builder {
         size += data[21].length;
         return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
     }
-    
-      
-    
-      
+       
 }
