@@ -48,22 +48,22 @@ public class ClientHandler extends Thread{
             //currentLabel incrementa toma sempre o valor do PDU recebido pelo servidor, 
             //pois o servidor so faz reply, e os reply tens a mesma label que as mensagens dos clientes
             DatagramPacket request,reply;
-            
+            socket.connect(packetAdress, packetPort);
             while(!logout){
-              request = new DatagramPacket(new byte[256],256,packetAdress,packetPort);  
+              request = new DatagramPacket(new byte[1024],1024,packetAdress,packetPort);  
               
               socket.receive(request);
               
               PDU requestPDU = PDU.fromBytes(request.getData());
-             
+                System.out.println("rquest tipo -> " + requestPDU.getType());
               PDU replyPDU  = parsePDU(requestPDU);
-              if(replyPDU!= null){
+             // if(replyPDU!= null){
                 if(replyPDU.getType()==4) logout=true;
 
                 byte[] replyData = PDU.toBytes(replyPDU);
                 reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
                 socket.send(reply);
-              }
+              //}
             }
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -85,7 +85,7 @@ public class ClientHandler extends Thread{
                     boolean ok = clients.registerClient(name,nick,password);
 
                     if(!ok)//return erro
-                        return null;
+                        return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "ja existe alguem com esse nickname");
                     //return register reply
                     return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
                 }
@@ -96,14 +96,14 @@ public class ClientHandler extends Thread{
                     int ok = clients.login(port,nick,password);
                     
                     if(ok== -1)
-                        //return erro password errada
+                       return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(),"password errada");
                     if(ok== -2)
-                        //username nao existe
+                       return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(),"nick nao existe");
                         
-                    return null;                   
+                    return REPLY_Builder.REPLY_NICKNAME(requestPDU.getLabel(), nick);
                 }   
                 case 4:{//logout
-
+                       return null;
                 }
             }
        }

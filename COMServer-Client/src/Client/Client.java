@@ -41,6 +41,7 @@ public class Client {
         HelloMessenger hellom = new HelloMessenger(socket,Server_host,label);
         hellom.start();
         
+        
         DatagramPacket ACK = new DatagramPacket(new byte[256], 256);
         socket.receive(ACK);
         PDU reply = PDU.fromBytes(ACK.getData());
@@ -49,12 +50,26 @@ public class Client {
             System.out.println(ACK.getAddress().getHostAddress()+": "+ ACK.getPort() + " -->  says it's okay");
             ComunicationPort = ACK.getPort();
             hellom.hello_time = false;
-            
-        }
             hellom.join();
-            socket.connect(InetAddress.getByName(Server_host), ComunicationPort);
+        }
+               
+           socket.connect(InetAddress.getByName(Server_host), ComunicationPort);
             
-        
+           while(true){
+            PDU pdu =  PDU_Builder.REGISTER_PDU("Pedro", "pedrosilva", "1234".getBytes(), label);
+
+            byte[] data= PDU.toBytes(pdu);
+            DatagramPacket request = new DatagramPacket(data, data.length);
+            socket.send(request);
+            System.out.println("just Sended");
+            ACK.setData(new byte[1024]);
+            ACK.setLength(1024);
+            socket.receive(ACK);
+            reply = PDU.fromBytes(ACK.getData());
+            
+            System.out.println(reply.getLabel());
+            System.out.println(reply.getType());
+           }
     }
     
     

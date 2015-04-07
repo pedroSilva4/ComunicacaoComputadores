@@ -145,7 +145,7 @@ public class REPLY_Builder {
     
     static public PDU REPLY_ERRO(int label, String description){
         int size = 0;
-        byte data[][] = new byte[21][];
+        byte data[][] = new byte[22][];
         data[21] = description.getBytes();
         size += data[21].length;
         return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
