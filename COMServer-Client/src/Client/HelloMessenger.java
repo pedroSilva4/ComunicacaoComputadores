@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * @author Pedro
  */
 public class HelloMessenger extends Thread{
-    boolean hello_time = true;
+    public boolean hello_time = true;
         DatagramSocket socket; 
         DatagramPacket packet;
         String host;
