@@ -103,8 +103,62 @@ public class ClientHandler extends Thread{
                     return REPLY_Builder.REPLY_NICKNAME(requestPDU.getLabel(), nick);
                 }   
                 case 4:{//logout
-                       return null;
+                    int ok = clients.logout(port);
+                    
+                    if(ok == -1)
+                        return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "não foi feito o login desse utilizador");
+                    
+                    return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
                 }
+                case 5:{//quit  - (sem parametros) - Utilizador jogo do desafio;
+                    
+                    
+                    return null;
+                }
+                case 6:{//end   - (sem parametros) - No final do jogo informa da pontuação dos intervenientes 
+                    
+                    
+                    return null;
+                }
+                case 7:{//list challenges - (sem parametros) - lista os desafios registados no sistema 
+                    
+                    
+                    return null;
+                }
+                case 8:{/*make challenges - (nome/data prevista/hora prevista) - 
+                                       lançar um desafio, se não conter data nem hora, por defeito é começa daqui a 5 minutos.*/
+                    
+                    
+                    return null;
+                }
+                case 9:{//acept challenge - (nome do desafio) - nao pode aceitar desafios dele proprio
+                    
+                    
+                    return null;
+                }
+                case 10:{//delele challenge - (nome do desafio) - ou apaga o que é destinado, e o que fez.
+                    
+                    
+                    return null;
+                }
+                case 11:{//answer - (numero resposta, nome do desafio, numero da questao)
+                    
+                    
+                    return null;
+                }
+                case 12:{//retransmit - (nome do desafio/numero questao que se quer jogar/numero de bloco de ordem do audio) - 
+                    
+                    
+                    return null;
+                }
+                case 13:{//list ranking - (sem parametros) - 
+                    
+                    
+                    return null;
+                }
+                
+                
+                
             }
        }
         return null;
