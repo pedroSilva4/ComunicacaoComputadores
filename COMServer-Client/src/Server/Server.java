@@ -2,13 +2,12 @@ package Server;
 
 
 import Common.PDU;
-import Client.PDU_Builder;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +37,8 @@ public class Server {
         threadPort = 5001;
         connectionsMap = new HashMap<>();
         Clients clients = new Clients();
+        Map<String,Challenge> Challenges = new HashMap<>();
+        loadChallenges((HashMap<String, Challenge>) Challenges);
         new ServerHelloHandler(clients).start();
     }
     
@@ -79,6 +80,24 @@ public class Server {
              }
            }
            
+        }
+    }
+    
+    public static void loadChallenges(HashMap<String,Challenge> challenges) {
+        
+        File folder = new File("Challenges");
+        
+        for(File f: folder.listFiles()){
+            if(f.getPath().endsWith(".ch")){
+                try {
+                    System.out.println(f.getPath());
+                    Challenge ch = new Challenge(f.getPath());
+                    challenges.put(ch.getName(), ch);
+                    System.out.println("Challenge "+ch.getName()+" Carregado");
+                } catch (IOException ex) {
+                   System.out.println("Ocurreu um erro ao carregar desafio");
+                }
+            }
         }
     }
 }
