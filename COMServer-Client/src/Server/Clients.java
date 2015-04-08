@@ -33,7 +33,7 @@ public class Clients {
         loggedIn  = new HashMap<>();
     }
     
-    boolean registerClient(String name, String nick, byte[] password) {
+    public boolean registerClient(String name, String nick, byte[] password) {
        if(registered.containsKey(nick))
            return false;
        
@@ -42,7 +42,7 @@ public class Clients {
        return true;
     }
     
-    int login(int port,String nick, byte[] password) {
+    public int login(int port,String nick, byte[] password) {
         if(registered.containsKey(nick)){
             if(registered.get(nick).password == password){
                 loggedIn.put(port, nick);
@@ -50,7 +50,16 @@ public class Clients {
             }
             return -1;
         }
-        return -2;
-        
+        return -2; 
     }
+    
+    public int logout(int port){
+        if(loggedIn.containsKey(port)){
+            loggedIn.remove(port);
+            return 0;
+        }
+        return -1;
+    }
+    
+    
 }
