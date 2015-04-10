@@ -43,25 +43,29 @@ public class Challenge {
       }
 
         public byte[] getImage() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return this.image;
+        }
+        public byte[] getMusic() {
+           return this.music;
         }
 
         public String getAnswer1() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+           return this.answers[0];
         }
 
         public String getAnswer2() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return this.answers[1];
         }
 
         public String getAnswer3() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+           return this.answers[2];
         }
 
         public String getQuestion() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return this.question;
         }
     }
+    
     String name;
     int n_questions;
     Map<Integer,Question> questions;

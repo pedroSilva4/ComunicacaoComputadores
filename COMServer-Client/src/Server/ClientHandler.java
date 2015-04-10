@@ -100,7 +100,7 @@ public class ClientHandler extends Thread{
                     if(ok== -2)
                        return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(),"nick nao existe");
                         
-                    return REPLY_Builder.REPLY_NICKNAME(requestPDU.getLabel(), nick);
+                    return REPLY_Builder.REPLY_NAME(requestPDU.getLabel(), clients.getName(nick),clients.getPoints(nick));
                 }   
                 case 4:{//logout
                     int ok = clients.logout(port);

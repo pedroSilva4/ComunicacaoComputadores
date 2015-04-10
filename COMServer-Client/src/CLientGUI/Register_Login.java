@@ -12,6 +12,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
 
 /**
  *
@@ -63,6 +64,11 @@ public class Register_Login extends javax.swing.JFrame {
         });
 
         login.setText("Login");
+        login.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loginActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Nome :");
 
@@ -149,11 +155,52 @@ public class Register_Login extends javax.swing.JFrame {
             System.out.println(reply.getLabel());
             System.out.println(reply.getType());
             if(reply.getData()!=null)
-             System.out.println(new String(reply.getData()[21]));
+            {
+                if(reply.getData()[21]!=null){
+                    System.out.println(new String(reply.getData()[21]));
+                }
+                else{
+                    //iniciar campo de challenges e assim
+                    System.out.println(new String(reply.getData()[0]));
+                }
+            }
         } catch (IOException ex) {
             Logger.getLogger(Register_Login.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_registerActionPerformed
+
+    private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
+        try {
+            // TODO add your handling code here:
+            String user = this.nick.getText();
+            byte[] pass = this.password.getText().getBytes();
+            PDU pdu =  PDU_Builder.LOGIN_PDU(user, pass, label);
+            DatagramPacket ACK = new DatagramPacket(new byte[1024],1024);
+            
+            byte[] data= PDU.toBytes(pdu);
+            DatagramPacket request = new DatagramPacket(data, data.length);
+            socket.send(request);
+            System.out.println("just Sended");
+            socket.receive(ACK);
+            PDU reply = PDU.fromBytes(ACK.getData());
+            
+            System.out.println(reply.getLabel());
+            System.out.println(reply.getType());
+            if(reply.getData()!=null){
+                if(reply.getData()[21]!=null){
+                System.out.println(new String(reply.getData()[21]));
+                }
+                else{
+                    String nome = new String(reply.getData()[1]);
+                    String points = new String(reply.getData()[20]);
+                    System.out.println(nome + " " + points );
+                    //new Lobby(nome,points,socket,this).setVisible(true);
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Register_Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_loginActionPerformed
 
     /**
      * @param args the command line arguments

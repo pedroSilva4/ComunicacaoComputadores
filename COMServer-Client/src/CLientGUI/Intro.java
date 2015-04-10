@@ -7,6 +7,7 @@ package CLientGUI;
 
 import Client.HelloMessenger;
 import Common.PDU;
+import com.alee.laf.WebLookAndFeel;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -124,6 +125,7 @@ public class Intro extends javax.swing.JFrame {
                 //socket.close();
                 
                 new Register_Login(socket,ComunicationPort,label).setVisible(true);
+                this.setVisible(false);
             }
             
             
@@ -167,6 +169,7 @@ public class Intro extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                 boolean install = WebLookAndFeel.install();
                 new Intro().setVisible(true);
             }
         });

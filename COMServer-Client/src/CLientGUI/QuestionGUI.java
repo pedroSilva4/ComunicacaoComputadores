@@ -50,7 +50,8 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
             
             time = 60;
             timer_lb.setText("1:00");
-            init();
+            byte[] music = Files.readAllBytes(Paths.get("Challenges\\musica\\000003.mp3"));
+            init(music);
             
             //((CardLayout)jPanel1.getLayout()).show(jPanel1, "image");
         } catch (IOException ex) {
@@ -58,13 +59,11 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         }
         
     }
-    final void init(){
-        try {
+    final void init(byte[] music){
+      
             timer.addObserver(this);
-            new PlayMusic(Files.readAllBytes(Paths.get("Challenges\\musica\\000003.mp3")),timer).start();
-        } catch (IOException ex) {
-            Logger.getLogger(QuestionGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            new QuestionRunner(music,timer).start();
+        
     }
     public QuestionGUI(Question question) {
         this.q = question;
@@ -74,6 +73,10 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         this.answer2.setText(q.getAnswer2());
         this.answer3.setText(q.getAnswer3());
         this.question.setText(q.getQuestion());
+        timer = new TimerUpdate(); 
+        time = 60;
+        timer_lb.setText("1:00");
+        init(q.getMusic());
         
     }
 
@@ -134,13 +137,15 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(imageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(answer2, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(answer1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(answer3, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(timer_lb, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(50, 50, 50))))
+                            .addComponent(answer1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(answer3, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(17, 17, 17)
+                                .addComponent(timer_lb, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(42, 42, 42))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -149,19 +154,21 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(question))
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(imageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(imageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(39, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(answer1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(answer3, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(52, 52, 52)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(answer1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(answer3, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
                         .addComponent(timer_lb)
-                        .addGap(30, 30, 30)))
-                .addContainerGap(39, Short.MAX_VALUE))
+                        .addGap(69, 69, 69))))
         );
 
         pack();
@@ -260,13 +267,13 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
       } 
     }
     
-    public class PlayMusic extends Thread{
+    public class QuestionRunner extends Thread{
         
         byte[] music;
         //boolean answer;
         TimerUpdate timer;
          Player mp3player;
-        public PlayMusic(byte[] music,TimerUpdate timer){
+        public QuestionRunner(byte[] music,TimerUpdate timer){
             this.music = music;
             this.timer = timer;
             answer = false;

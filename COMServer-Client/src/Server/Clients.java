@@ -6,6 +6,7 @@
 package Server;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ import java.util.Map;
  */
 public class Clients {
 
-    private class Client{
+    public class Client{
         String name;
         String nick;
         byte[] password;
@@ -25,26 +26,29 @@ public class Clients {
             password = pass;
         }
     }
-    Map<String,Client> registered;
-    Map<Integer,String> loggedIn;
+    public  Map<String,Client> registered;
+    public Map<Integer,String> loggedIn;
+    public Map<String,Integer> ranking;
     
     public Clients(){
         registered  = new HashMap<>();
         loggedIn  = new HashMap<>();
+        ranking = new HashMap<>();
     }
     
-    public boolean registerClient(String name, String nick, byte[] password) {
+    synchronized public boolean registerClient(String name, String nick, byte[] password) {
        if(registered.containsKey(nick))
            return false;
        
        registered.put(nick, new Client(name,nick,password));
+       ranking.put(nick,0);
        
        return true;
     }
     
-    public int login(int port,String nick, byte[] password) {
+    synchronized public int login(int port,String nick, byte[] password) {
         if(registered.containsKey(nick)){
-            if(registered.get(nick).password == password){
+            if(Arrays.equals(registered.get(nick).password, password)){
                 loggedIn.put(port, nick);
                 return 1;
             }
@@ -53,12 +57,20 @@ public class Clients {
         return -2; 
     }
     
-    public int logout(int port){
+    synchronized public int logout(int port){
         if(loggedIn.containsKey(port)){
             loggedIn.remove(port);
             return 0;
         }
         return -1;
+    }
+    
+    synchronized public String getName(String nick){
+        return this.registered.get(nick).name;
+    }
+    
+    synchronized public int getPoints(String nick){
+        return this.ranking.get(nick);
     }
     
     
