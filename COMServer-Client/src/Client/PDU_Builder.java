@@ -58,7 +58,7 @@ public final class PDU_Builder {
         return new PDU(0.0f,0,6,label,0,0,null,0);
     }
     
-    static public PDU LIST_CHALLENGE(int label){
+    static public PDU LIST_CHALLENGES(int label){
         return new PDU(0.0f,0,7,label,0,0,null,0);
     }
     

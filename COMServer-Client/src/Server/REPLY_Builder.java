@@ -6,6 +6,8 @@
 package Server;
 
 import Common.PDU;
+import java.sql.Time;
+import java.util.Date;
 
 /**
  *
@@ -150,6 +152,19 @@ public class REPLY_Builder {
         data[21] = description.getBytes();
         size += data[21].length;
         return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
+    }
+    
+    static public PDU REPLY_LISTCHALLENGE(int label,int hasnext,String name,Date date, Time hour){
+        int size = 0;
+        byte data[][] = new byte[22][];
+        data[7] = name.getBytes();
+        size += data[7].length;
+        data[4] = date.toString().getBytes();
+        size += data[4].length;
+        data[5] = hour.toString().getBytes();
+        size += data[5].length;
+        
+        return new PDU(0.0f, 0, 0,label, 1, size, data, hasnext);
     }
        
 }

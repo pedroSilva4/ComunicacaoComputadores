@@ -141,6 +141,7 @@ public class Register_Login extends javax.swing.JFrame {
             String user = this.nick.getText();
             byte[] pass = this.password.getText().getBytes();
             PDU pdu =  PDU_Builder.REGISTER_PDU(name, user, pass, label);
+            label++;
             DatagramPacket ACK = new DatagramPacket(new byte[256], 256);
             
             byte[] data= PDU.toBytes(pdu);
@@ -176,6 +177,7 @@ public class Register_Login extends javax.swing.JFrame {
             String user = this.nick.getText();
             byte[] pass = this.password.getText().getBytes();
             PDU pdu =  PDU_Builder.LOGIN_PDU(user, pass, label);
+            label++;
             DatagramPacket ACK = new DatagramPacket(new byte[1024],1024);
             
             byte[] data= PDU.toBytes(pdu);
@@ -195,7 +197,7 @@ public class Register_Login extends javax.swing.JFrame {
                     String nome = new String(reply.getData()[1]);
                     String points = new String(reply.getData()[20]);
                     System.out.println(nome + " " + points );
-                    //new Lobby(nome,points,socket,this).setVisible(true);
+                    new Lobby(nome,points,socket,this,label).setVisible(true);
                 }
             }
         } catch (IOException ex) {

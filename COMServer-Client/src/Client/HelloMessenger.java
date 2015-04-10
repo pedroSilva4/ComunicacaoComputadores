@@ -23,7 +23,7 @@ public class HelloMessenger extends Thread{
         DatagramSocket socket; 
         DatagramPacket packet;
         String host;
-        int label;
+        public int label;
         
         
         public HelloMessenger(DatagramSocket socket,String host,int label) throws UnknownHostException{

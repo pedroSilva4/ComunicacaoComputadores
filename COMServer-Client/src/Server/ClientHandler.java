@@ -7,11 +7,13 @@ package Server;
 
 import Common.PDU;
 import Client.PDU_Builder;
+import Common.Challenge;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,16 +28,16 @@ public class ClientHandler extends Thread{
     InetAddress packetAdress;
     int currentLabel;
     Clients clients;
-            
+    ChallengesInfo challengeInfo;        
     
-    public ClientHandler(int firstLabel,int port,DatagramPacket packet,Clients clients) throws SocketException{
+    public ClientHandler(int firstLabel,int port,DatagramPacket packet,Clients clients, ChallengesInfo challengeInfo) throws SocketException{
         this.port = port;
         socket = new DatagramSocket(port);
         packetPort = packet.getPort();
         packetAdress = packet.getAddress();
         this.currentLabel = firstLabel;
         this.clients = clients;
-        
+        this.challengeInfo=challengeInfo;
     }
     
     public void run(){
@@ -120,7 +122,9 @@ public class ClientHandler extends Thread{
                     
                     return null;
                 }
-                case 7:{//list challenges - (sem parametros) - lista os desafios registados no sistema 
+                case 7:{
+                        //
+                        
                     
                     
                     return null;

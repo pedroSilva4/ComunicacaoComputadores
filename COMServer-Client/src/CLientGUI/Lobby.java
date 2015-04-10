@@ -5,6 +5,13 @@
  */
 package CLientGUI;
 
+import Client.PDU_Builder;
+import Common.PDU;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import javax.swing.JFrame;
+
 /**
  *
  * @author fdr
@@ -14,10 +21,49 @@ public class Lobby extends javax.swing.JFrame {
     /**
      * Creates new form Lobby
      */
+    
+    DatagramSocket socket;
+    String user,points;
+    Register_Login regsiter_login;
+    int label;
     public Lobby() {
         initComponents();
     }
 
+    public Lobby(String nome, String points, DatagramSocket socket, Register_Login rl,int label) throws IOException {
+         initComponents();
+         this.socket = socket;
+         this.user = nome;
+         this.points = points;
+         this.regsiter_login = rl;
+         this.label = label;
+         
+         PDU request = PDU_Builder.LIST_CHALLENGES(label);
+         label++;
+         byte[] data = PDU.toBytes(request);
+         DatagramPacket packet = new DatagramPacket(data, data.length);
+         socket.send(packet);
+         
+         packet = new DatagramPacket(new byte[1024], 1024);
+         socket.receive(packet);
+         
+         PDU reply = PDU.fromBytes(packet.getData());
+         
+         if(reply.getData()!=null){
+                if(reply.getData()[21]!=null){
+                    new ErrorWindow("Erro",new String(reply.getData()[21]),"error", this).wshow();
+                }
+                else{
+                    
+                    System.out.println(nome + " " + points );
+                    //new Lobby(nome,points,socket,this,label).setVisible(true);
+                }
+            }
+         
+    }
+    
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

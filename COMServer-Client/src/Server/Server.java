@@ -38,9 +38,8 @@ public class Server {
         threadPort = 5001;
         connectionsMap = new HashMap<>();
         Clients clients = new Clients();
-        Map<String,Challenge> Challenges = new HashMap<>();
-        loadChallenges((HashMap<String, Challenge>) Challenges);
-        new ServerHelloHandler(clients).start();
+        
+        //new ServerHelloHandler(clients,ChallengesTypes,Challenges).start();
     }
     
     static class ServerHelloHandler extends Thread{
@@ -49,9 +48,11 @@ public class Server {
         
         DatagramSocket socket;
         Clients clients;
-        public ServerHelloHandler(Clients clients) throws SocketException, IOException{
+        ChallengesInfo challengeInfo;
+        public ServerHelloHandler(Clients clients, ChallengesInfo challengeInfo) throws SocketException, IOException{
             socket = new DatagramSocket(port);
             this.clients = clients;
+            this.challengeInfo= challengeInfo;
         }
         
         public void run(){
@@ -69,7 +70,7 @@ public class Server {
                   System.out.println(message.toString());
                   
                   //recebe hello
-                  connectionsMap.put(threadPort, new ClientHandler(firstLabel,threadPort,packet,clients));
+                  connectionsMap.put(threadPort, new ClientHandler(firstLabel,threadPort,packet,clients,challengeInfo));
                   
                   //inicia a thread do cliente no servidor
                   connectionsMap.get(threadPort).start();
@@ -84,21 +85,4 @@ public class Server {
         }
     }
     
-    public static void loadChallenges(HashMap<String,Challenge> challenges) {
-        
-        File folder = new File("Challenges");
-        
-        for(File f: folder.listFiles()){
-            if(f.getPath().endsWith(".ch")){
-                try {
-                    System.out.println(f.getPath());
-                    Challenge ch = new Challenge(f.getPath());
-                    challenges.put(ch.getName(), ch);
-                    System.out.println("Challenge "+ch.getName()+" Carregado");
-                } catch (IOException ex) {
-                   System.out.println("Ocurreu um erro ao carregar desafio");
-                }
-            }
-        }
-    }
 }

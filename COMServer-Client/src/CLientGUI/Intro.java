@@ -121,6 +121,7 @@ public class Intro extends javax.swing.JFrame {
                 ComunicationPort = ACK.getPort();
                 hellom.hello_time = false;
                 hellom.join();
+                label = hellom.label;
                 socket.connect(InetAddress.getByName(Server_host), ComunicationPort);
                 //socket.close();
                 
