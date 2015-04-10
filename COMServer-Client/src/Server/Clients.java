@@ -26,6 +26,7 @@ public class Clients {
             password = pass;
         }
     }
+    
     public  Map<String,Client> registered;
     public Map<Integer,String> loggedIn;
     public Map<String,Integer> ranking;

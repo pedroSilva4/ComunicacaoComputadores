@@ -157,11 +157,12 @@ public class Register_Login extends javax.swing.JFrame {
             if(reply.getData()!=null)
             {
                 if(reply.getData()[21]!=null){
-                    System.out.println(new String(reply.getData()[21]));
+                    new ErrorWindow("Erro",new String(reply.getData()[21]),"error", this).wshow();
                 }
                 else{
                     //iniciar campo de challenges e assim
                     System.out.println(new String(reply.getData()[0]));
+                     new ErrorWindow("Info","Registo bem sucedido","message", this).wshow();
                 }
             }
         } catch (IOException ex) {
@@ -188,7 +189,7 @@ public class Register_Login extends javax.swing.JFrame {
             System.out.println(reply.getType());
             if(reply.getData()!=null){
                 if(reply.getData()[21]!=null){
-                System.out.println(new String(reply.getData()[21]));
+                    new ErrorWindow("Erro",new String(reply.getData()[21]),"error", this).wshow();
                 }
                 else{
                     String nome = new String(reply.getData()[1]);
