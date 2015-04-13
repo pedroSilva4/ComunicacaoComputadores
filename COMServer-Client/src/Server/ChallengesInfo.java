@@ -29,7 +29,7 @@ public class ChallengesInfo {
          loadChallenges((HashMap<String, Challenge>) challengesTypes);
     }
     
-    synchronized public boolean make_challenge(String name,Date date,Time time,InetAddress makerAddress,int port){
+    synchronized public boolean make_challenge(String name,String date,String time,InetAddress makerAddress,int port){
        Random r =new Random();
        int i = r.nextInt(this.challengesTypes.keySet().size());
        String type= (String)challengesTypes.keySet().toArray()[i];
@@ -66,5 +66,18 @@ public class ChallengesInfo {
                 }
             }
         }
+    }
+
+    synchronized byte[][] getListChallenges() {
+       if(this.challenges.keySet().isEmpty()) return null;
+        
+       byte[][] res = new byte[this.challenges.keySet().size()][]; 
+       int i = 0;
+       for(String ug: this.challenges.keySet())
+       {
+           res[i] = (ug+","+challenges.get(ug).data+","+challenges.get(ug).time).getBytes();
+           i++;
+       }
+       return res;
     }
 }

@@ -10,6 +10,7 @@ import Common.PDU;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDialog;
@@ -189,6 +190,8 @@ public class Register_Login extends javax.swing.JFrame {
             
             System.out.println(reply.getLabel());
             System.out.println(reply.getType());
+            
+            //inicializar lobby ,faz list Challenges
             if(reply.getData()!=null){
                 if(reply.getData()[21]!=null){
                     new ErrorWindow("Erro",new String(reply.getData()[21]),"error", this).wshow();
@@ -197,7 +200,32 @@ public class Register_Login extends javax.swing.JFrame {
                     String nome = new String(reply.getData()[1]);
                     String points = new String(reply.getData()[20]);
                     System.out.println(nome + " " + points );
-                    new Lobby(nome,points,socket,this,label).setVisible(true);
+                    
+                    PDU requestPDU = PDU_Builder.LIST_CHALLENGES(label);
+                    label++;
+                    data = PDU.toBytes(requestPDU);
+                    DatagramPacket packet = new DatagramPacket(data, data.length);
+                    socket.send(packet);
+                    System.out.println(nome + "sup " + points );
+
+                    packet = new DatagramPacket(new byte[1024], 1024);
+                    socket.receive(packet);
+                    System.out.println(nome + "sup " + points );
+                    reply = PDU.fromBytes(packet.getData());
+                    byte[][] chs = reply.getData();
+                            
+                             ArrayList<String> strs = new ArrayList<>(); 
+                             if(chs!=null){
+                                for(byte[] b: chs){
+                                    String ch = new String(b);
+                                    strs.add(ch);
+                                }
+                             }
+                            
+                            new Lobby(nome,points,socket,this,label,strs).setVisible(true);
+                            this.setVisible(false);
+                    
+                       
                 }
             }
         } catch (IOException ex) {

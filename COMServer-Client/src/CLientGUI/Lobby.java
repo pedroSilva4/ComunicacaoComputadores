@@ -10,7 +10,11 @@ import Common.PDU;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.ArrayList;
+import java.util.Map;
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
+import javax.swing.ListModel;
 
 /**
  *
@@ -26,39 +30,28 @@ public class Lobby extends javax.swing.JFrame {
     String user,points;
     Register_Login regsiter_login;
     int label;
+    Map<String,String> activeChallenges;
     public Lobby() {
         initComponents();
     }
 
-    public Lobby(String nome, String points, DatagramSocket socket, Register_Login rl,int label) throws IOException {
+    public Lobby(String nome, String points, DatagramSocket socket, Register_Login rl,int label,ArrayList<String> strs) throws IOException {
          initComponents();
          this.socket = socket;
          this.user = nome;
          this.points = points;
          this.regsiter_login = rl;
-         this.label = label;
+         this.label = label;   
+         this.label_userInfo_nome.setText(nome);
+         this.label_userInfo_score.setText(points);
          
-         PDU request = PDU_Builder.LIST_CHALLENGES(label);
-         label++;
-         byte[] data = PDU.toBytes(request);
-         DatagramPacket packet = new DatagramPacket(data, data.length);
-         socket.send(packet);
+         DefaultListModel<String> model = new DefaultListModel<>();
          
-         packet = new DatagramPacket(new byte[1024], 1024);
-         socket.receive(packet);
+         for(String s:strs){
+             model.addElement(s);
+         }
          
-         PDU reply = PDU.fromBytes(packet.getData());
-         
-         if(reply.getData()!=null){
-                if(reply.getData()[21]!=null){
-                    new ErrorWindow("Erro",new String(reply.getData()[21]),"error", this).wshow();
-                }
-                else{
-                    
-                    System.out.println(nome + " " + points );
-                    //new Lobby(nome,points,socket,this,label).setVisible(true);
-                }
-            }
+        this.list_challenges.setModel(model);
          
     }
     
@@ -137,6 +130,11 @@ public class Lobby extends javax.swing.JFrame {
         bt_acceptChallenge.setText("Accept Challenge");
 
         bt_makeChallenge.setText("Make Challenge");
+        bt_makeChallenge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_makeChallengeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -181,6 +179,11 @@ public class Lobby extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void bt_makeChallengeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_makeChallengeActionPerformed
+        // TODO add your handling code here:
+        new MakeChallenge(this, true,socket,label).setVisible(true);
+    }//GEN-LAST:event_bt_makeChallengeActionPerformed
 
     /**
      * @param args the command line arguments

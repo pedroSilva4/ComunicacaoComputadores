@@ -5,6 +5,15 @@
  */
 package CLientGUI;
 
+import Client.PDU_Builder;
+import Common.PDU;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+
 /**
  *
  * @author fdr
@@ -14,9 +23,13 @@ public class MakeChallenge extends javax.swing.JDialog {
     /**
      * Creates new form MakeChallenge
      */
-    public MakeChallenge(java.awt.Frame parent, boolean modal) {
+    DatagramSocket socket;
+    int label;
+    public MakeChallenge(java.awt.Frame parent, boolean modal, DatagramSocket socket,int label) {
         super(parent, modal);
         initComponents();
+        this.label = label;
+        this.socket = socket;
     }
 
     /**
@@ -41,6 +54,11 @@ public class MakeChallenge extends javax.swing.JDialog {
         makeChallenge_label_nome.setText("Name Challenge:");
 
         jButton1.setText("Create");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         try {
             makeChallenge_ftf_Data.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
@@ -97,6 +115,29 @@ public class MakeChallenge extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            // TODO add your handling code here:
+            String name = this.makeChallenge_tf_nome.getText();
+            
+            PDU request = PDU_Builder.MAKE_CHALLENGE(label, name);
+            byte[] data  = PDU.toBytes(request);
+            DatagramPacket packet = new DatagramPacket(data, data.length);
+            
+            socket.send(packet);
+            
+            packet = new DatagramPacket(new byte[1024], 1024);
+            socket.receive(packet);
+            
+            PDU reply = PDU.fromBytes(packet.getData());
+            
+            new ErrorWindow("iupi!", "fuck yeah", "error",(JFrame)this.getParent()).wshow();
+        } catch (IOException ex) {
+            Logger.getLogger(MakeChallenge.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -127,7 +168,7 @@ public class MakeChallenge extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                MakeChallenge dialog = new MakeChallenge(new javax.swing.JFrame(), true);
+                MakeChallenge dialog = new MakeChallenge(new javax.swing.JFrame(), true,null,0);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

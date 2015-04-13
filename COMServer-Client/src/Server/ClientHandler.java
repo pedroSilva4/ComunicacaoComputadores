@@ -14,6 +14,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,13 +67,13 @@ public class ClientHandler extends Thread{
               PDU requestPDU = PDU.fromBytes(request.getData());
                 System.out.println("rquest tipo -> " + requestPDU.getType());
               PDU replyPDU  = parsePDU(requestPDU);
-             // if(replyPDU!= null){
+             if(replyPDU!= null){
                 if(replyPDU.getType()==4) logout=true;
 
                 byte[] replyData = PDU.toBytes(replyPDU);
                 reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
                 socket.send(reply);
-              //}
+              }
             }
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -77,11 +83,11 @@ public class ClientHandler extends Thread{
     }
     
     public PDU parsePDU(PDU requestPDU){
-        byte[][] fields= requestPDU.getData();
-        if(fields!=null){
+       
+       
             switch(requestPDU.getType()){
                 case 2:{//register
-
+                     byte[][] fields= requestPDU.getData();
                     String name  = new String(fields[0]);
                     String nick = new String(fields[1]);
                     byte[] password = fields[2];
@@ -94,6 +100,7 @@ public class ClientHandler extends Thread{
                     return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
                 }
                 case 3:{//login
+                     byte[][] fields= requestPDU.getData();
                     String nick = new String(fields[0]);
                     byte[] password = fields[1];
                     
@@ -127,16 +134,27 @@ public class ClientHandler extends Thread{
                 }
                 case 7:{
                         //
-                        
                     
-                    
-                    return null;
+                    return REPLY_Builder.REPLY_LISTCHALLENGE(requestPDU.getLabel(),0,challengeInfo);
                 }
                 case 8:{/*make challenges - (nome/data prevista/hora prevista) - 
                                        lançar um desafio, se não conter data nem hora, por defeito é começa daqui a 5 minutos.*/
                                        //this.challengeInfo.make_challenge(null, null, null, packetAdress, port)
+                    byte[][] fields= requestPDU.getData();
                     
-                    return null;
+                    String name = new String(fields[0]);
+                    SimpleDateFormat datef = new SimpleDateFormat("yyMMdd");
+                    SimpleDateFormat timef = new SimpleDateFormat("HHmmss");
+                   
+                    GregorianCalendar cal = new GregorianCalendar();
+                                cal.setTime(Date.from(Instant.now()));
+                                cal.add(Calendar.MINUTE, 5);
+                                     
+                    boolean b = this.challengeInfo.make_challenge(name,datef.format(cal.getTime()),timef.format(cal.getTime()), packetAdress, port);
+                    if(b)
+                      return REPLY_Builder.REPLY_CHALLENGE(requestPDU.getLabel(), name,datef.format(cal.getTime()),timef.format(cal.getTime()));
+                    else 
+                      return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "JA existe um Challenge com esse NOme");
                 }
                 case 9:{//acept challenge - (nome do desafio) - nao pode aceitar desafios dele proprio
                     
@@ -167,7 +185,7 @@ public class ClientHandler extends Thread{
                 
                 
             }
-       }
+       
         return null;
     }
     
