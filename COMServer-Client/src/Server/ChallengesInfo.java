@@ -8,6 +8,7 @@ package Server;
 import Common.Challenge;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.sql.Time;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,12 +29,25 @@ public class ChallengesInfo {
          loadChallenges((HashMap<String, Challenge>) challengesTypes);
     }
     
-    synchronized public void make_challenge(String name,Date date,Time time){
+    synchronized public boolean make_challenge(String name,Date date,Time time,InetAddress makerAddress,int port){
        Random r =new Random();
        int i = r.nextInt(this.challengesTypes.keySet().size());
        String type= (String)challengesTypes.keySet().toArray()[i];
+       if(challenges.containsKey(name)) return false;
        
-       challenges.put(name, new UserChallenge(name,date,time,challengesTypes.get(type)));
+       challenges.put(name, new UserChallenge(name,date,time,challengesTypes.get(type),port,makerAddress));
+       
+       return true;
+    }
+    
+    synchronized public boolean accept_challenge(String name,InetAddress acceptedAddress,int port)
+    {
+        if(!challenges.containsKey(name)) return false;
+       
+        challenges.get(name).setAcceptedInfo(acceptedAddress, port);
+       
+        
+        return true;
     }
     
     public static void loadChallenges(HashMap<String,Challenge> challenges) {

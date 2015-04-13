@@ -8,6 +8,7 @@ package Server;
 import Common.PDU;
 import Client.PDU_Builder;
 import Common.Challenge;
+import Server.Clients.Client;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -28,7 +29,8 @@ public class ClientHandler extends Thread{
     InetAddress packetAdress;
     int currentLabel;
     Clients clients;
-    ChallengesInfo challengeInfo;        
+    ChallengesInfo challengeInfo;    
+   
     
     public ClientHandler(int firstLabel,int port,DatagramPacket packet,Clients clients, ChallengesInfo challengeInfo) throws SocketException{
         this.port = port;
@@ -102,6 +104,7 @@ public class ClientHandler extends Thread{
                     if(ok== -2)
                        return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(),"nick nao existe");
                         
+                    //Guardar Username;
                     return REPLY_Builder.REPLY_NAME(requestPDU.getLabel(), clients.getName(nick),clients.getPoints(nick));
                 }   
                 case 4:{//logout
@@ -131,13 +134,13 @@ public class ClientHandler extends Thread{
                 }
                 case 8:{/*make challenges - (nome/data prevista/hora prevista) - 
                                        lançar um desafio, se não conter data nem hora, por defeito é começa daqui a 5 minutos.*/
-                    
+                                       //this.challengeInfo.make_challenge(null, null, null, packetAdress, port)
                     
                     return null;
                 }
                 case 9:{//acept challenge - (nome do desafio) - nao pode aceitar desafios dele proprio
                     
-                    
+                     this.challengeInfo.accept_challenge(null, packetAdress, port);
                     return null;
                 }
                 case 10:{//delele challenge - (nome do desafio) - ou apaga o que é destinado, e o que fez.

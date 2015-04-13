@@ -38,8 +38,8 @@ public class Server {
         threadPort = 5001;
         connectionsMap = new HashMap<>();
         Clients clients = new Clients();
-        
-        //new ServerHelloHandler(clients,ChallengesTypes,Challenges).start();
+        ChallengesInfo challengesInfo = new ChallengesInfo();
+        new ServerHelloHandler(clients,challengesInfo).start();
     }
     
     static class ServerHelloHandler extends Thread{
