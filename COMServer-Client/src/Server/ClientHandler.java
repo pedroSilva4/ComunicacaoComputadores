@@ -7,7 +7,6 @@ package Server;
 
 import Common.PDU;
 import Client.PDU_Builder;
-import Common.Challenge;
 import Server.Clients.Client;
 import java.io.IOException;
 import java.net.DatagramPacket;

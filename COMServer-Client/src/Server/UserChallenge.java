@@ -5,7 +5,6 @@
  */
 package Server;
 
-import Common.Challenge;
 import java.net.InetAddress;
 
 

@@ -131,7 +131,7 @@ public class MakeChallenge extends javax.swing.JDialog {
             
             PDU reply = PDU.fromBytes(packet.getData());
             
-            new ErrorWindow("iupi!", "fuck yeah", "error",(JFrame)this.getParent()).wshow();
+            new ErrorWindow("Messagem", "Challenge Created", "Message",(JFrame)this.getParent()).wshow();
         } catch (IOException ex) {
             Logger.getLogger(MakeChallenge.class.getName()).log(Level.SEVERE, null, ex);
         }

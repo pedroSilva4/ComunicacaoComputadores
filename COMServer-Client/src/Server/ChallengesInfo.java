@@ -5,7 +5,6 @@
  */
 package Server;
 
-import Common.Challenge;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -55,7 +54,7 @@ public class ChallengesInfo {
         File folder = new File("Challenges");
         
         for(File f: folder.listFiles()){
-            if(f.getPath().endsWith(".ch")){
+            if(f.getPath().endsWith(".txt")){
                 try {
                     System.out.println(f.getPath());
                     Challenge ch = new Challenge(f.getPath());

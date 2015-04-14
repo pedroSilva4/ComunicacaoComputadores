@@ -1,7 +1,6 @@
 package Server;
 
 
-import Common.Challenge;
 import Common.PDU;
 import java.io.File;
 import java.io.FileFilter;

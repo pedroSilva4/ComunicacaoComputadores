@@ -5,7 +5,7 @@
  */
 package CLientGUI;
 
-import Common.Challenge.Question;
+import Server.Challenge.Question;
 import com.alee.laf.WebLookAndFeel;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -285,7 +285,6 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
                
                 while(!answer){
                     int time = (60000 - mp3player.getPosition());
-                    System.out.println(time);
                     if(time<=0)break;
                         timer.timerupdate(time/1000);
                 }
