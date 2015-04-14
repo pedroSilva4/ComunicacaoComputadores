@@ -7,6 +7,7 @@ package Server;
 
 import Common.PDU;
 import Client.PDU_Builder;
+import Server.Challenge.Question;
 import Server.Clients.Client;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -14,6 +15,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Calendar;
@@ -35,6 +37,7 @@ public class ClientHandler extends Thread{
     int currentLabel;
     Clients clients;
     ChallengesInfo challengeInfo;    
+    String challengeMorA = null;
    
     
     public ClientHandler(int firstLabel,int port,DatagramPacket packet,Clients clients, ChallengesInfo challengeInfo) throws SocketException{
@@ -58,20 +61,40 @@ public class ClientHandler extends Thread{
             //pois o servidor so faz reply, e os reply tens a mesma label que as mensagens dos clientes
             DatagramPacket request,reply;
             socket.connect(packetAdress, packetPort);
+            boolean b;
             while(!logout){
-              request = new DatagramPacket(new byte[1024],1024,packetAdress,packetPort);  
-              
-              socket.receive(request);
-              
-              PDU requestPDU = PDU.fromBytes(request.getData());
-                System.out.println("rquest tipo -> " + requestPDU.getType());
-              PDU replyPDU  = parsePDU(requestPDU);
-             if(replyPDU!= null){
-                if(replyPDU.getType()==4) logout=true;
+                 b = hasChallengeNow();
+              if(!b){
+                request = new DatagramPacket(new byte[1024],1024,packetAdress,packetPort);  
 
-                byte[] replyData = PDU.toBytes(replyPDU);
-                reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
-                socket.send(reply);
+                socket.receive(request);
+
+                PDU requestPDU = PDU.fromBytes(request.getData());
+                  System.out.println("rquest tipo -> " + requestPDU.getType());
+                PDU replyPDU  = parsePDU(requestPDU);
+                if(replyPDU!= null){
+                  if(replyPDU.getType()==4) logout=true;
+
+                  byte[] replyData = PDU.toBytes(replyPDU);
+                  reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
+                  socket.send(reply);
+                }
+              }else{
+                  
+                  Challenge ch  =this.challengeInfo.getUserChallenge(challengeMorA).challenge;
+                  Map<Integer,Question> questions = ch.questions;
+                  for(int i: questions.keySet()){
+                     PDU question = REPLY_Builder.REPLY_QUESTION(0,questions.get(i).question, i, questions.get(i).answers);
+                     data = PDU.toBytes(question);
+                     packet = new DatagramPacket(data, data.length);
+                     socket.send(packet);
+                     //questao enviada
+                     //enviar imagem
+                     //enviar musica
+                    
+                     
+                  }
+                  challengeMorA = null;
               }
             }
         } catch (IOException ex) {
@@ -111,6 +134,7 @@ public class ClientHandler extends Thread{
                        return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(),"nick nao existe");
                         
                     //Guardar Username;
+                    
                     return REPLY_Builder.REPLY_NAME(requestPDU.getLabel(), clients.getName(nick),clients.getPoints(nick));
                 }   
                 case 4:{//logout
@@ -150,14 +174,16 @@ public class ClientHandler extends Thread{
                                 cal.add(Calendar.MINUTE, 5);
                                      
                     boolean b = this.challengeInfo.make_challenge(name,datef.format(cal.getTime()),timef.format(cal.getTime()), packetAdress, port);
-                    if(b)
+                    if(b){
+                      this.challengeMorA = name;  
                       return REPLY_Builder.REPLY_CHALLENGE(requestPDU.getLabel(), name,datef.format(cal.getTime()),timef.format(cal.getTime()));
-                    else 
+                    }else 
                       return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "JA existe um Challenge com esse NOme");
                 }
                 case 9:{//acept challenge - (nome do desafio) - nao pode aceitar desafios dele proprio
-                    
-                     this.challengeInfo.accept_challenge(null, packetAdress, port);
+                     String name = "uiui";
+                     this.challengeInfo.accept_challenge(name, packetAdress, port);
+                     this.challengeMorA=name;
                     return null;
                 }
                 case 10:{//delele challenge - (nome do desafio) - ou apaga o que é destinado, e o que fez.
@@ -186,6 +212,29 @@ public class ClientHandler extends Thread{
             }
        
         return null;
+    }
+
+    private boolean hasChallengeNow() {
+        
+        if(challengeMorA==null) return false;
+        UserChallenge ch = this.challengeInfo.getUserChallenge(this.challengeMorA);
+       
+       if(ch!=null){
+            try {
+                Calendar cal = new GregorianCalendar();
+                DateFormat datef = new SimpleDateFormat("yyMMddHHmmss");
+                String finaltime = ch.data+ch.time;
+                cal.setTime(datef.parse(finaltime));
+                Calendar cal2 = Calendar.getInstance();
+                if(cal2.equals(cal) || cal2.after(cal)){
+                    return true;
+                }
+            } catch (ParseException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+       }
+       
+       return false;
     }
     
 }
