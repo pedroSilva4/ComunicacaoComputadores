@@ -11,6 +11,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -37,28 +38,32 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
     TimerUpdate timer;
     boolean answer = false;
     public QuestionGUI() {
-        try {
+        //try {
             initComponents();
             
-            byte[] finalarr = Files.readAllBytes(Paths.get("Challenges\\imagens\\000003.jpg"));
-            this.imageContainer.add(new PaintImage(finalarr),"image");
-            timer = new TimerUpdate();
+            //byte[] finalarr = Files.readAllBytes(Paths.get("Challenges\\imagens\\000003.jpg"));
+            //this.imageContainer.add(new PaintImage(finalarr),"image");
+            //timer = new TimerUpdate();
             
-            time = 60;
-            timer_lb.setText("1:00");
-            byte[] music = Files.readAllBytes(Paths.get("Challenges\\musica\\000003.mp3"));
-            init(music);
+            //time = 60;
+            //timer_lb.setText("1:00");
+            //byte[] music = Files.readAllBytes(Paths.get("Challenges\\musica\\000003.mp3"));
+            //init(music);
             
             //((CardLayout)jPanel1.getLayout()).show(jPanel1, "image");
+        //} catch (IOException ex) {
+          //  Logger.getLogger(QuestionGUI.class.getName()).log(Level.SEVERE, null, ex);
+        //}
+        
+    }
+    final void init(byte[][] music){
+      
+        try {
+            timer.addObserver(this);
+            new QuestionRunner(music,timer).start();
         } catch (IOException ex) {
             Logger.getLogger(QuestionGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    }
-    final void init(byte[] music){
-      
-            timer.addObserver(this);
-            new QuestionRunner(music,timer).start();
         
     }
     public QuestionGUI(Question question) {
@@ -241,13 +246,18 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
     { 
        public BufferedImage image; 
 
-      public PaintImage (byte[] image) 
+      public PaintImage (byte[][] image) 
       { 
         super(); 
         try 
         {                
            //byte[] finalarr = Files.readAllBytes(Paths.get("Challenges\\imagens\\000003.jpg"));
-           this.image = ImageIO.read(new ByteArrayInputStream(image)); 
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            
+            for(byte[] i : image)
+                outputStream.write(i);
+          
+           this.image = ImageIO.read(new ByteArrayInputStream(outputStream.toByteArray())); 
 
         } 
         catch (IOException e) 
@@ -269,8 +279,13 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         //boolean answer;
         TimerUpdate timer;
          Player mp3player;
-        public QuestionRunner(byte[] music,TimerUpdate timer){
-            this.music = music;
+        public QuestionRunner(byte[][] music,TimerUpdate timer) throws IOException{
+            
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            for(byte[] m : music)
+                out.write(m);
+            
+            this.music = out.toByteArray();
             this.timer = timer;
             answer = false;
         }
