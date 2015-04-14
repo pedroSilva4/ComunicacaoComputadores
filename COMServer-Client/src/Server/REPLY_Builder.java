@@ -79,11 +79,19 @@ public class REPLY_Builder {
         return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
     }
     
-    static public PDU REPLY_QUESTION(int label, String question){
+    static public PDU REPLY_QUESTION(int label, String question,int question_n,String[] answers){
         int size = 0;
         byte data[][] = new byte[22][];
+        data[10] = String.valueOf(question_n).getBytes();
+         size += data[10].length;
         data[11] = question.getBytes();
         size += data[11].length;
+        String answers_s = answers[0];
+        for(int i = 1;i<answers.length;i++){
+            answers_s+=";"+answers[i];
+        }
+        data[12] =answers_s.getBytes();
+        size+=data[12].length;
         return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
     }
    

@@ -79,4 +79,8 @@ public class ChallengesInfo {
        }
        return res;
     }
+
+    synchronized UserChallenge getUserChallenge(String name) {
+        return this.challenges.get(name);
+    }
 }
