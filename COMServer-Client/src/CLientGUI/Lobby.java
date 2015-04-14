@@ -46,11 +46,13 @@ public class Lobby extends javax.swing.JFrame {
          this.label = label;   
          this.label_userInfo_nome.setText(nome);
          this.label_userInfo_score.setText(points);
+         bt_acceptChallenge.setEnabled(false);
+         bt_removeChallenge.setEnabled(false);
          
          DefaultListModel<String> model = new DefaultListModel<>();
          
          for(String s:strs){
-             model.addElement(s);
+             model.addElement(parcer(s));
          }
          
         this.list_challenges.setModel(model);
@@ -79,6 +81,7 @@ public class Lobby extends javax.swing.JFrame {
         label_userInfo_score = new javax.swing.JLabel();
         bt_acceptChallenge = new javax.swing.JButton();
         bt_makeChallenge = new javax.swing.JButton();
+        bt_removeChallenge = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(522, 382));
@@ -87,6 +90,11 @@ public class Lobby extends javax.swing.JFrame {
             String[] strings = { "Joguinho - 21h:10m:45s do dia 10 de Março de 2015", "Jogatina - 21h:15m:00s do dia 10 de Março de 2015" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
+        });
+        list_challenges.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                list_challengesValueChanged(evt);
+            }
         });
         jScrollPane2.setViewportView(list_challenges);
 
@@ -116,7 +124,7 @@ public class Lobby extends javax.swing.JFrame {
                     .addComponent(ui_score))
                 .addGap(18, 18, 18)
                 .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(label_userInfo_nome, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
+                    .addComponent(label_userInfo_nome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(label_userInfo_score, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -134,7 +142,12 @@ public class Lobby extends javax.swing.JFrame {
                 .addGap(9, 9, 9))
         );
 
-        bt_acceptChallenge.setText("Accept Challenge");
+        bt_acceptChallenge.setText("Accept ");
+        bt_acceptChallenge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_acceptChallengeActionPerformed(evt);
+            }
+        });
 
         bt_makeChallenge.setText("Make Challenge");
         bt_makeChallenge.addActionListener(new java.awt.event.ActionListener() {
@@ -143,45 +156,52 @@ public class Lobby extends javax.swing.JFrame {
             }
         });
 
+        bt_removeChallenge.setText("Remove ");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(bt_makeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(label_listChallenges)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(button_list_challenges, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 146, Short.MAX_VALUE))
+                                .addComponent(bt_acceptChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(bt_removeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(41, 41, 41)
+                        .addComponent(panel_user_info, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(bt_acceptChallenge, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(bt_makeChallenge, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(panel_user_info, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(label_listChallenges)
+                        .addGap(360, 360, 360)
+                        .addComponent(button_list_challenges, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 481, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(bt_makeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29)
-                        .addComponent(bt_acceptChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(bt_acceptChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(bt_removeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(panel_user_info, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(button_list_challenges)
-                    .addComponent(label_listChallenges))
+                .addGap(50, 50, 50)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(label_listChallenges))
+                    .addComponent(button_list_challenges))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(60, Short.MAX_VALUE))
         );
 
         pack();
@@ -218,7 +238,7 @@ public class Lobby extends javax.swing.JFrame {
             DefaultListModel<String> model = new DefaultListModel<>();
          
             for(String s:strs){
-                model.addElement(s);
+                model.addElement(parcer(s));
             }
          
             this.list_challenges.setModel(model);
@@ -228,35 +248,57 @@ public class Lobby extends javax.swing.JFrame {
                     
     }//GEN-LAST:event_button_list_challengesActionPerformed
 
-        private String percer(String date){
-            
-            String nome = null;
-            String data = null;
-            String hora = null;
+    private void list_challengesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_list_challengesValueChanged
+        // TODO add your handling code here:
+        bt_acceptChallenge.setEnabled(true);
+        bt_removeChallenge.setEnabled(true);
+    }//GEN-LAST:event_list_challengesValueChanged
+
+    private void bt_acceptChallengeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_acceptChallengeActionPerformed
+        // TODO add your handling code here:
+        this.bt_makeChallenge.setEnabled(false);
+        this.bt_acceptChallenge.setEnabled(false);
+    }//GEN-LAST:event_bt_acceptChallengeActionPerformed
+
+        private String parcer(String date){
             
             String[] tokens = date.split(",");
-            nome = tokens[0];
-            data = tokens[1];
-            data = tokens[2];
+            String nome = tokens[0]+ " - ";
+            String hora = tokens[2].substring(0,2)+":h"+tokens[2].substring(2,4)+":m"+tokens[2].substring(4)+":s";
+            String ano = "20"+tokens[1].substring(0,2);
+            String dia = tokens[1].substring(4);
+            String mes = tokens[1].substring(2,4);
             
-            return null;
+            switch (mes) {
+                case "01":  mes = "January";
+                            break;
+                case "02":  mes = "February";
+                            break;
+                case "03":  mes = "March";
+                            break;
+                case "04":  mes = "April";
+                            break;
+                case "05":  mes = "May";
+                            break;
+                case "06":  mes = "June";
+                            break;
+                case "07":  mes = "July";
+                            break;
+                case "08":  mes = "August";
+                            break;
+                case "09":  mes = "September";
+                            break;
+                case "10":  mes = "October";
+                            break;
+                case "11":  mes = "November";
+                            break;
+                case "12":  mes = "December";
+                            break;
+            }
+            String data = dia + " de " + mes + " de " +ano;
+            
+            return nome+hora+" do"+" dia "+data;
         }
-    
-       private String parcerDate(String date){
-           //in: 150514 => out: 14 de Maio de 2015
-           
-           
-           
-           return null;
-       }
-       
-       private String parcerHour(String h){
-           //in: 103300 => out: 13h:33m:00s
-       
-           
-           return null;
-       }
-    
     
     /**
      * @param args the command line arguments
@@ -296,6 +338,7 @@ public class Lobby extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bt_acceptChallenge;
     private javax.swing.JButton bt_makeChallenge;
+    private javax.swing.JButton bt_removeChallenge;
     private javax.swing.JButton button_list_challenges;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel label_listChallenges;

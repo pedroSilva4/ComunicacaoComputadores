@@ -26,52 +26,58 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace min="35" pref="35" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jScrollPane2" min="-2" pref="341" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="label_listChallenges" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="button_list_challenges" min="-2" pref="48" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="bt_makeChallenge" min="-2" pref="280" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="bt_acceptChallenge" min="-2" pref="131" max="-2" attributes="0"/>
+                              <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
+                              <Component id="bt_removeChallenge" min="-2" pref="131" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="0" pref="146" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
+                      <Component id="panel_user_info" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="bt_acceptChallenge" pref="200" max="32767" attributes="0"/>
-                          <Component id="bt_makeChallenge" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="panel_user_info" min="-2" max="-2" attributes="0"/>
+                      <Component id="label_listChallenges" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="360" pref="360" max="-2" attributes="0"/>
+                      <Component id="button_list_challenges" min="-2" pref="48" max="-2" attributes="0"/>
                   </Group>
+                  <Component id="jScrollPane2" min="-2" pref="481" max="-2" attributes="0"/>
               </Group>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+          <Group type="102" attributes="0">
+              <EmptySpace min="16" pref="16" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Component id="bt_makeChallenge" min="-2" pref="50" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
-                      <Component id="bt_acceptChallenge" min="-2" pref="50" max="-2" attributes="0"/>
+                      <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="bt_acceptChallenge" min="-2" pref="50" max="-2" attributes="0"/>
+                          <Component id="bt_removeChallenge" min="-2" pref="51" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
-                  <Component id="panel_user_info" min="-2" max="-2" attributes="0"/>
+                  <Component id="panel_user_info" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="31" max="32767" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="button_list_challenges" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="label_listChallenges" alignment="3" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="50" pref="50" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
+                      <Component id="label_listChallenges" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="button_list_challenges" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane2" min="-2" pref="161" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane2" min="-2" pref="127" max="-2" attributes="0"/>
+              <EmptySpace pref="60" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -93,6 +99,9 @@
               </StringArray>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="list_challengesValueChanged"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -131,7 +140,7 @@
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="label_userInfo_nome" pref="83" max="32767" attributes="0"/>
+                      <Component id="label_userInfo_nome" max="32767" attributes="0"/>
                       <Component id="label_userInfo_score" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -175,8 +184,11 @@
     </Container>
     <Component class="javax.swing.JButton" name="bt_acceptChallenge">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Accept Challenge"/>
+        <Property name="text" type="java.lang.String" value="Accept "/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bt_acceptChallengeActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="bt_makeChallenge">
       <Properties>
@@ -185,6 +197,11 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bt_makeChallengeActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="bt_removeChallenge">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Remove "/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
