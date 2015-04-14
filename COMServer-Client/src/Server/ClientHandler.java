@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -65,20 +66,22 @@ public class ClientHandler extends Thread{
             while(!logout){
                  b = hasChallengeNow();
               if(!b){
-                request = new DatagramPacket(new byte[1024],1024,packetAdress,packetPort);  
+                  if(challengeMorA==null){
+                    request = new DatagramPacket(new byte[1024],1024,packetAdress,packetPort);  
 
-                socket.receive(request);
+                    socket.receive(request);
 
-                PDU requestPDU = PDU.fromBytes(request.getData());
-                  System.out.println("rquest tipo -> " + requestPDU.getType());
-                PDU replyPDU  = parsePDU(requestPDU);
-                if(replyPDU!= null){
-                  if(replyPDU.getType()==4) logout=true;
+                    PDU requestPDU = PDU.fromBytes(request.getData());
+                      System.out.println("rquest tipo -> " + requestPDU.getType());
+                    PDU replyPDU  = parsePDU(requestPDU);
+                    if(replyPDU!= null){
+                      if(replyPDU.getType()==4) logout=true;
 
-                  byte[] replyData = PDU.toBytes(replyPDU);
-                  reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
-                  socket.send(reply);
-                }
+                      byte[] replyData = PDU.toBytes(replyPDU);
+                      reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
+                      socket.send(reply);
+                    }
+                 }
               }else{
                   
                   Challenge ch  =this.challengeInfo.getUserChallenge(challengeMorA).challenge;
@@ -89,9 +92,48 @@ public class ClientHandler extends Thread{
                      packet = new DatagramPacket(data, data.length);
                      socket.send(packet);
                      //questao enviada
-                     //enviar imagem
-                     //enviar musica
-                    
+                     
+                     byte[][] media = questions.get(i).image;
+                     int hasnext = 1;
+                     for(int j = 0; j<media.length;j++){
+                     
+                        if(j==media.length-1) hasnext = 0;
+
+                        PDU imagem = REPLY_Builder.REPLY_IMAGE(0,challengeMorA,i,j,media[j],hasnext);
+                        data = PDU.toBytes(imagem);
+                        packet = new DatagramPacket(data, data.length);
+                        socket.send(packet);
+                     
+                     }
+                    //imagem enviada
+                     hasnext =1;
+                     media = questions.get(i).music;
+                     for(int j = 0; j<media.length;j++){
+                        if(j==media.length-1) hasnext = 0;
+
+                        PDU imagem = REPLY_Builder.REPLY_AUDIO(0,challengeMorA,i,j,media[j],hasnext);
+                        data = PDU.toBytes(imagem);
+                        packet = new DatagramPacket(data, data.length);
+                        socket.send(packet);   
+                     }
+                     //enviar musica                    
+                     packet = new DatagramPacket(new byte[1024],1024);
+                     socket.receive(packet);
+                     
+                     PDU answer = PDU.fromBytes(packet.getData());
+                     if(answer.getType()==11){
+                         //answer.getData()[]
+                         
+                         //verificar se resposta correta e incrementar pontos.
+                         
+                         //responde ao pedido
+                     
+                      data = PDU.toBytes( REPLY_Builder.REPLY_ISRIGHTANWSER(0,0));
+                      packet = new DatagramPacket(data, data.length);
+                      socket.send(packet);
+                      
+                      //depois passa para a proxima pergunta.
+                     }
                      
                   }
                   challengeMorA = null;
@@ -236,5 +278,6 @@ public class ClientHandler extends Thread{
        
        return false;
     }
+
     
 }

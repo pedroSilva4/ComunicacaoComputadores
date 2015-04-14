@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +32,10 @@ public class Challenge {
         String question;
         String[] answers  = new String[3];
         int rightanswer;
-        byte[] music;
-        byte[] image;
+        byte[][] music;
+        byte[][] image;
         
-      public Question(int question_n,String question,String[] answers,int correctanswer,byte[] m,byte[] image){
+      public Question(int question_n,String question,String[] answers,int correctanswer,byte[][] m,byte[][] image){
           this.question_n=question_n;
           this.question = question;
           this.answers = answers;
@@ -43,10 +44,10 @@ public class Challenge {
           this.image= image;
       }
 
-        public byte[] getImage() {
+        public byte[][] getImage() {
             return this.image;
         }
-        public byte[] getMusic() {
+        public byte[][] getMusic() {
            return this.music;
         }
 
@@ -90,8 +91,8 @@ public class Challenge {
             
              String musicPath = "Challenges"+File.separator+musicsDir+File.separator+parts[0].split(",")[0];
              String imagePath = "Challenges"+File.separator+imagesDir+File.separator+parts[0].split(",")[1];
-             byte[] music = Files.readAllBytes(Paths.get(musicPath));
-             byte[] image = Files.readAllBytes(Paths.get(imagePath));
+             byte[][] music = divideArray(Files.readAllBytes(Paths.get(musicPath)),48000);
+             byte[][] image = divideArray(Files.readAllBytes(Paths.get(imagePath)),48000);
              String[] answers = new String[3];
              answers[0] = parts[2];
              answers[1] = parts[3];
@@ -129,5 +130,18 @@ public class Challenge {
         mp3player.play();
         */
     }
-    
+     public static byte[][] divideArray(byte[] source, int chunksize) {
+
+
+        byte[][] ret = new byte[(int)Math.ceil(source.length / (double)chunksize)][chunksize];
+
+        int start = 0;
+
+        for(int i = 0; i < ret.length; i++) {
+            ret[i] = Arrays.copyOfRange(source,start, start + chunksize);
+            start += chunksize ;
+        }
+
+        return ret;
+    }
 }

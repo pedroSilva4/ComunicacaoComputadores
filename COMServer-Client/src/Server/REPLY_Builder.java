@@ -127,12 +127,16 @@ public class REPLY_Builder {
         return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
     }
     
-    static public PDU REPLY_IMAGE(int label, byte[] image, int hasnext){
+    static public PDU REPLY_IMAGE(int label,String name,int question, int part,byte[] image, int hasnext){
         int size = 0;
         byte data[][] = new byte[22][];
+        data[10] = String.valueOf(question).getBytes();
+        size += data[10].length;
         data[16] = image;
         size += data[16].length;
-        return new PDU(0.0f, 0, 0,label, 1, size, data, hasnext);
+        data[17] = String.valueOf(part).getBytes();
+        size+=data[17].length;
+        return new PDU(0.0f, 0, 0,label, 3, size, data, hasnext);
     }
     
     static public PDU REPLY_BLOCKNUMBER(int label, int number){
@@ -143,12 +147,16 @@ public class REPLY_Builder {
         return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
     }
     
-    static public PDU REPLY_AUDIO(int label, byte[] audio, int hasnext){
+    static public PDU REPLY_AUDIO(int label,String name,int question,int part, byte[] audio, int hasnext){
         int size = 0;
         byte data[][] = new byte[22][];
+        data[10] = String.valueOf(question).getBytes();
+        size += data[10].length;
+        data[17] = String.valueOf(part).getBytes();
+        size+=data[17].length;
         data[18] = audio;
         size += data[18].length;
-        return new PDU(0.0f, 0, 0,label, 1, size, data, hasnext);
+        return new PDU(0.0f, 0, 0,label, 3, size, data, hasnext);
     }
     
     static public PDU REPLY_SCORE(int label, int score){
