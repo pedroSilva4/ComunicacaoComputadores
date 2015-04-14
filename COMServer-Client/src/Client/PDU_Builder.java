@@ -62,11 +62,15 @@ public final class PDU_Builder {
         return new PDU(0.0f,0,7,label,0,0,null,0);
     }
     
-    static public PDU MAKE_CHALLENGE(int label,String challenge){
+    static public PDU MAKE_CHALLENGE(int label,String challenge, String date, String time){
         int size = 0;
         byte[][] data = new byte[3][];
         data[0] = challenge.getBytes();
         size += data[0].length;
+        data[1] =date.getBytes();
+        size += data[1].length;
+        data[2] = time.getBytes();
+        size += data[2].length;
         
         return new PDU(0.0f,0,8,label,3,size,data,0);
     }

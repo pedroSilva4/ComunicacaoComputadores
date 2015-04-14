@@ -91,6 +91,9 @@
           <Format format="##/##/####" subtype="-1" type="5"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="makeChallenge_ftf_DataActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="makeChallenge_date">
       <Properties>
@@ -106,6 +109,9 @@
           <Format format="##:##" subtype="-1" type="5"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="makeChallenge_tff_horaActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

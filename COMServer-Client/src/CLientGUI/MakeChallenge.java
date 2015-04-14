@@ -65,6 +65,11 @@ public class MakeChallenge extends javax.swing.JDialog {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        makeChallenge_ftf_Data.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                makeChallenge_ftf_DataActionPerformed(evt);
+            }
+        });
 
         makeChallenge_date.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         makeChallenge_date.setText("Date:");
@@ -74,6 +79,11 @@ public class MakeChallenge extends javax.swing.JDialog {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        makeChallenge_tff_hora.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                makeChallenge_tff_horaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -119,8 +129,20 @@ public class MakeChallenge extends javax.swing.JDialog {
         try {
             // TODO add your handling code here:
             String name = this.makeChallenge_tf_nome.getText();
+            String date = this.makeChallenge_ftf_Data.getText();
+            String time= this.makeChallenge_tff_hora.getText();
+           
+            // pora data e hora com estrutura correcta
+            String[] tokens = date.split("/");
             
-            PDU request = PDU_Builder.MAKE_CHALLENGE(label, name);
+            
+            date= tokens[2].substring(2)+tokens[1]+tokens[0];
+          
+            
+            String[] tokenstime = time.split(":");
+            time = tokenstime[0]+tokenstime[1]+"00";
+            
+            PDU request = PDU_Builder.MAKE_CHALLENGE(label, name, date, time);
             byte[] data  = PDU.toBytes(request);
             DatagramPacket packet = new DatagramPacket(data, data.length);
             
@@ -137,6 +159,15 @@ public class MakeChallenge extends javax.swing.JDialog {
         }
         
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void makeChallenge_ftf_DataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_makeChallenge_ftf_DataActionPerformed
+        // TODO add your handling code here:
+     
+    }//GEN-LAST:event_makeChallenge_ftf_DataActionPerformed
+
+    private void makeChallenge_tff_horaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_makeChallenge_tff_horaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_makeChallenge_tff_horaActionPerformed
 
     /**
      * @param args the command line arguments
