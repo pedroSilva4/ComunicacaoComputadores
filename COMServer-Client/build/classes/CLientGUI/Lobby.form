@@ -105,6 +105,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="R"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="button_list_challengesActionPerformed"/>
+      </Events>
     </Component>
     <Container class="javax.swing.JPanel" name="panel_user_info">
       <Properties>

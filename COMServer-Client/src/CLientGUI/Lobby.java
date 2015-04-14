@@ -12,6 +12,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.ListModel;
@@ -91,6 +93,11 @@ public class Lobby extends javax.swing.JFrame {
         label_listChallenges.setText("Challenges:");
 
         button_list_challenges.setText("R");
+        button_list_challenges.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_list_challengesActionPerformed(evt);
+            }
+        });
 
         panel_user_info.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "User Info:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 13))); // NOI18N
 
@@ -185,6 +192,72 @@ public class Lobby extends javax.swing.JFrame {
         new MakeChallenge(this, true,socket,label).setVisible(true);
     }//GEN-LAST:event_bt_makeChallengeActionPerformed
 
+    private void button_list_challengesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_list_challengesActionPerformed
+
+        try {
+            PDU requestPDU = PDU_Builder.LIST_CHALLENGES(label);
+            label++;
+            byte[] data = PDU.toBytes(requestPDU);
+            DatagramPacket packet = new DatagramPacket(data, data.length);
+            socket.send(packet);
+            packet = new DatagramPacket(new byte[1024], 1024);
+            socket.receive(packet);
+            PDU reply = PDU.fromBytes(packet.getData());
+            byte[][] chs = reply.getData();
+            
+            ArrayList<String> strs = new ArrayList<>();
+            if(chs!=null){
+                for(byte[] b: chs){
+                    String ch = new String(b);
+                    strs.add(ch);
+                }
+            }
+            
+            //parcer
+            
+            DefaultListModel<String> model = new DefaultListModel<>();
+         
+            for(String s:strs){
+                model.addElement(s);
+            }
+         
+            this.list_challenges.setModel(model);
+        } catch (IOException ex) {
+            Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+        }
+                    
+    }//GEN-LAST:event_button_list_challengesActionPerformed
+
+        private String percer(String date){
+            
+            String nome = null;
+            String data = null;
+            String hora = null;
+            
+            String[] tokens = date.split(",");
+            nome = tokens[0];
+            data = tokens[1];
+            data = tokens[2];
+            
+            return null;
+        }
+    
+       private String parcerDate(String date){
+           //in: 150514 => out: 14 de Maio de 2015
+           
+           
+           
+           return null;
+       }
+       
+       private String parcerHour(String h){
+           //in: 103300 => out: 13h:33m:00s
+       
+           
+           return null;
+       }
+    
+    
     /**
      * @param args the command line arguments
      */
