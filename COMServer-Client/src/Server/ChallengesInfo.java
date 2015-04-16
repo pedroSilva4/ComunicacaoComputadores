@@ -5,6 +5,8 @@
  */
 package Server;
 
+import Common.ChallengeType;
+import Common.UserChallenge;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,12 +22,12 @@ import java.util.Random;
  */
 public class ChallengesInfo {
     Map<String,UserChallenge> challenges ;
-    Map<String,Challenge> challengesTypes ;
+    Map<String,ChallengeType> challengesTypes ;
      
     public ChallengesInfo(){
          challenges = new HashMap<>();
          challengesTypes = new HashMap<>();
-         loadChallenges((HashMap<String, Challenge>) challengesTypes);
+         loadChallenges((HashMap<String, ChallengeType>) challengesTypes);
     }
     
     synchronized public boolean make_challenge(String name,String date,String time,InetAddress makerAddress,int port){
@@ -49,7 +51,7 @@ public class ChallengesInfo {
         return true;
     }
     
-    public static void loadChallenges(HashMap<String,Challenge> challenges) {
+    public static void loadChallenges(HashMap<String,ChallengeType> challenges) {
         
         File folder = new File("Challenges");
         
@@ -57,7 +59,7 @@ public class ChallengesInfo {
             if(f.getPath().endsWith(".txt")){
                 try {
                     System.out.println(f.getPath());
-                    Challenge ch = new Challenge(f.getPath());
+                    ChallengeType ch = new ChallengeType(f.getPath());
                     challenges.put(ch.getName(), ch);
                     System.out.println("Challenge "+ch.getName()+" Carregado");
                 } catch (IOException ex) {

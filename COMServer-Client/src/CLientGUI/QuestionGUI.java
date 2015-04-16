@@ -5,7 +5,7 @@
  */
 package CLientGUI;
 
-import Server.Challenge.Question;
+import Common.Question;
 import com.alee.laf.WebLookAndFeel;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -37,6 +37,8 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
     Question q;
     TimerUpdate timer;
     boolean answer = false;
+    AnswerInformer ansInfo;
+    int n_question;
     public QuestionGUI() {
         //try {
             initComponents();
@@ -66,7 +68,7 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         }
         
     }
-    public QuestionGUI(Question question) {
+    public QuestionGUI(Question question,GameThread gt,int qt) {
         this.q = question;
         initComponents();
         this.imageContainer.add(new PaintImage(q.getImage()),"image");
@@ -78,7 +80,9 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         time = 60;
         timer_lb.setText("1:00");
         init(q.getMusic());
-        
+        this.ansInfo = new AnswerInformer();
+        ansInfo.addObserver(gt);
+        n_question  =qt;
     }
 
     /**
@@ -108,8 +112,18 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         });
 
         answer2.setText("Resposta2");
+        answer2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                answer2ActionPerformed(evt);
+            }
+        });
 
         answer3.setText("Resposta3");
+        answer3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                answer3ActionPerformed(evt);
+            }
+        });
 
         imageContainer.setBorder(javax.swing.BorderFactory.createTitledBorder("Imagem"));
         imageContainer.setLayout(new java.awt.CardLayout());
@@ -177,8 +191,19 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
 
     private void answer1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_answer1ActionPerformed
         // TODO add your handling code here:
+        this.ansInfo.answer(this.n_question, 1, this.time);
         this.answer = true;
     }//GEN-LAST:event_answer1ActionPerformed
+
+    private void answer2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_answer2ActionPerformed
+        this.ansInfo.answer(this.n_question, 3, this.time);
+        this.answer = true;
+    }//GEN-LAST:event_answer2ActionPerformed
+
+    private void answer3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_answer3ActionPerformed
+       this.ansInfo.answer(this.n_question, 3, this.time);
+        this.answer = true;
+    }//GEN-LAST:event_answer3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -238,7 +263,9 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         
         if(time==0)
         {
+            this.ansInfo.answer(n_question, -1, time);
             this.dispose();
+           
         }
     }
 
@@ -282,8 +309,10 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         public QuestionRunner(byte[][] music,TimerUpdate timer) throws IOException{
             
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            for(byte[] m : music)
-                out.write(m);
+            for(byte[] m : music){
+                if(m.length>0)
+                    out.write(m);
+            }
             
             this.music = out.toByteArray();
             this.timer = timer;
@@ -327,4 +356,11 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
                 this.notifyObservers(time);
             }
         }
+    public class AnswerInformer extends Observable{
+        public void answer(int question,int opt, int time){
+            String s = ""+question+";"+opt+";"+time;
+            this.setChanged();
+            this.notifyObservers(s);
+        }
+    }
 }

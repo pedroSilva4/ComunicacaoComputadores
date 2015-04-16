@@ -58,7 +58,7 @@ public class REPLY_Builder {
         return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
     }
     
-    static public PDU REPLY_CHALLENGE(int label, String name,String date, String time){
+    static public PDU REPLY_CHALLENGE(int label, String name,String date, String time,int n_questions){
         int size = 0;
         byte data[][] = new byte[22][];
         data[7] = name.getBytes();
@@ -67,8 +67,9 @@ public class REPLY_Builder {
         size += data[4].length;
         data[5] = time.getBytes();
         size += data[5].length;
-        
-        return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
+        data[10] =String.valueOf(n_questions).getBytes();
+        size += data[5].length;
+        return new PDU(0.0f, 0, 0,label, 4, size, data, 0);
     }
     
     static public PDU REPLY_NUNBERQESTION(int label, int number){

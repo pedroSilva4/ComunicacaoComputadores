@@ -95,5 +95,7 @@ public class PDU implements Serializable{
         return this.data;
     }
     
-    
+    public int getHashNext(){
+        return this.hasnext;
+    }
 }

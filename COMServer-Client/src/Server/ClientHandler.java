@@ -5,9 +5,11 @@
  */
 package Server;
 
+import Common.UserChallenge;
+import Common.ChallengeType;
 import Common.PDU;
 import Client.PDU_Builder;
-import Server.Challenge.Question;
+import Common.Question;
 import Server.Clients.Client;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -83,8 +85,8 @@ public class ClientHandler extends Thread{
                     }
                  }
               }else{
-                  
-                  Challenge ch  =this.challengeInfo.getUserChallenge(challengeMorA).challenge;
+                  System.out.println("GameTime");
+                  ChallengeType ch  =this.challengeInfo.getUserChallenge(challengeMorA).challenge;
                   Map<Integer,Question> questions = ch.questions;
                   for(int i: questions.keySet()){
                      PDU question = REPLY_Builder.REPLY_QUESTION(0,questions.get(i).question, i, questions.get(i).answers);
@@ -93,21 +95,22 @@ public class ClientHandler extends Thread{
                      socket.send(packet);
                      //questao enviada
                      
-                     byte[][] media = questions.get(i).image;
+                     byte[][] media = questions.get(i).getImage();
                      int hasnext = 1;
                      for(int j = 0; j<media.length;j++){
                      
                         if(j==media.length-1) hasnext = 0;
 
-                        PDU imagem = REPLY_Builder.REPLY_IMAGE(0,challengeMorA,i,j,media[j],hasnext);
+                        PDU imagem = REPLY_Builder.REPLY_IMAGE(0,challengeMorA,i, j,media[j],hasnext);
                         data = PDU.toBytes(imagem);
                         packet = new DatagramPacket(data, data.length);
                         socket.send(packet);
                      
                      }
+                     //envia confirmação ou retransmissao?
                     //imagem enviada
                      hasnext =1;
-                     media = questions.get(i).music;
+                     media = questions.get(i).getMusic();
                      for(int j = 0; j<media.length;j++){
                         if(j==media.length-1) hasnext = 0;
 
@@ -116,7 +119,9 @@ public class ClientHandler extends Thread{
                         packet = new DatagramPacket(data, data.length);
                         socket.send(packet);   
                      }
-                     //enviar musica                    
+                     //envia confirmação ou retransmissao?
+                     
+                     //musica enviada                   
                      packet = new DatagramPacket(new byte[1024],1024);
                      socket.receive(packet);
                      
@@ -217,8 +222,9 @@ public class ClientHandler extends Thread{
                                      
                     boolean b = this.challengeInfo.make_challenge(name,datef.format(cal.getTime()),timef.format(cal.getTime()), packetAdress, port);
                     if(b){
-                      this.challengeMorA = name;  
-                      return REPLY_Builder.REPLY_CHALLENGE(requestPDU.getLabel(), name,datef.format(cal.getTime()),timef.format(cal.getTime()));
+                      this.challengeMorA = name;
+                      int n_questions = this.challengeInfo.getUserChallenge(name).challenge.n_questions;
+                      return REPLY_Builder.REPLY_CHALLENGE(requestPDU.getLabel(), name,datef.format(cal.getTime()),timef.format(cal.getTime()),n_questions);
                     }else 
                       return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "JA existe um Challenge com esse NOme");
                 }

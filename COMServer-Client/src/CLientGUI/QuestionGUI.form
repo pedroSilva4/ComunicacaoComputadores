@@ -94,11 +94,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Resposta2"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="answer2ActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="answer3">
       <Properties>
         <Property name="text" type="java.lang.String" value="Resposta3"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="answer3ActionPerformed"/>
+      </Events>
     </Component>
     <Container class="javax.swing.JPanel" name="imageContainer">
       <Properties>

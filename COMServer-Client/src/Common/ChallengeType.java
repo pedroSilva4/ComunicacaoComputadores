@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Server;
+package Common;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,58 +22,20 @@ import java.util.Map;
  *
  * @author Pedro
  */
-public class Challenge {
+public class ChallengeType {
 
     public String getName() {
         return this.name;
     }
-    public class Question{
-        int question_n;
-        String question;
-        String[] answers  = new String[3];
-        int rightanswer;
-        byte[][] music;
-        byte[][] image;
-        
-      public Question(int question_n,String question,String[] answers,int correctanswer,byte[][] m,byte[][] image){
-          this.question_n=question_n;
-          this.question = question;
-          this.answers = answers;
-          this.rightanswer=correctanswer;
-          this.music = m;
-          this.image= image;
-      }
-
-        public byte[][] getImage() {
-            return this.image;
-        }
-        public byte[][] getMusic() {
-           return this.music;
-        }
-
-        public String getAnswer1() {
-           return this.answers[0];
-        }
-
-        public String getAnswer2() {
-            return this.answers[1];
-        }
-
-        public String getAnswer3() {
-           return this.answers[2];
-        }
-
-        public String getQuestion() {
-            return this.question;
-        }
-    }
+   
+      
     
-    String name;
-    int n_questions;
-    Map<Integer,Question> questions;
+    public String name;
+    public int n_questions;
+    public Map<Integer,Question> questions;
     
     
-    public Challenge(String filepath) throws IOException{
+    public ChallengeType(String filepath) throws IOException{
        String[] pathparts = filepath.split("\\"+File.separator);
        name = pathparts[pathparts.length-1].split("\\.")[0];
        questions = new HashMap<>();

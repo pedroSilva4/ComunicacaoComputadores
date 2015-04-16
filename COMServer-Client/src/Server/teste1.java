@@ -5,6 +5,7 @@
  */
 package Server;
 
+import Common.ChallengeType;
 import java.io.File;
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public class teste1 {
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         
-        Challenge ch = new Challenge("Challenges"+File.separator+"desafio-000001.ch");
+        ChallengeType ch = new ChallengeType("Challenges"+File.separator+"desafio-000001.ch");
     }
     
 }

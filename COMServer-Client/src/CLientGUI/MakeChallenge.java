@@ -153,7 +153,11 @@ public class MakeChallenge extends javax.swing.JDialog {
             
             PDU reply = PDU.fromBytes(packet.getData());
             
+            parse_reply(reply);
+            
             new ErrorWindow("Messagem", "Challenge Created", "Message",(JFrame)this.getParent()).wshow();
+            
+            
         } catch (IOException ex) {
             Logger.getLogger(MakeChallenge.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -219,4 +223,21 @@ public class MakeChallenge extends javax.swing.JDialog {
     private javax.swing.JTextField makeChallenge_tf_nome;
     private javax.swing.JFormattedTextField makeChallenge_tff_hora;
     // End of variables declaration//GEN-END:variables
+
+    void parse_reply(PDU reply){
+        byte[][] data = reply.getData();
+        
+        if(data[21] == null){
+            String date = new String(data[4]);
+            String time = new String(data[5]);
+            String name = new String(data[7]);
+            int n_questions = Integer.parseInt(new String(data[10]));
+            
+            new GameThread(socket, name, date, time,n_questions).start();
+        }
+    }
+
+
+
+
 }
