@@ -72,9 +72,9 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         this.q = question;
         initComponents();
         this.imageContainer.add(new PaintImage(q.getImage()),"image");
-        this.answer1.setText(q.getAnswer1());
-        this.answer2.setText(q.getAnswer2());
-        this.answer3.setText(q.getAnswer3());
+        this.answer1_lb.setText(q.getAnswer1());
+        this.answer2_lb.setText(q.getAnswer2());
+        this.answer3_lb.setText(q.getAnswer3());
         this.question.setText(q.getQuestion());
         timer = new TimerUpdate(); 
         time = 60;
@@ -101,24 +101,28 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         jLabel1 = new javax.swing.JLabel();
         question = new javax.swing.JLabel();
         timer_lb = new javax.swing.JLabel();
+        answer1_lb = new javax.swing.JLabel();
+        answer2_lb = new javax.swing.JLabel();
+        answer3_lb = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
-        answer1.setText("Resposta1");
+        answer1.setText("A");
         answer1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 answer1ActionPerformed(evt);
             }
         });
 
-        answer2.setText("Resposta2");
+        answer2.setText("B");
         answer2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 answer2ActionPerformed(evt);
             }
         });
 
-        answer3.setText("Resposta3");
+        answer3.setText("C");
         answer3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 answer3ActionPerformed(evt);
@@ -137,53 +141,75 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         timer_lb.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         timer_lb.setText("0:59");
 
+        answer1_lb.setText("resposta 1");
+
+        answer2_lb.setText("resposta 2");
+
+        answer3_lb.setText("resposta 3");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(94, 94, 94)
+                        .addGap(192, 192, 192)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(question)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(6, 6, 6)
+                        .addComponent(question))
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
                         .addComponent(imageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                        .addGap(6, 6, 6)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(answer1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(answer3, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(17, 17, 17)
-                                .addComponent(timer_lb, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(42, 42, 42))))
+                                .addComponent(answer1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(4, 4, 4)
+                                .addComponent(answer1_lb, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(4, 4, 4)
+                                .addComponent(answer2_lb, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(answer3, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(4, 4, 4)
+                                .addComponent(answer3_lb, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(timer_lb, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(76, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(8, 8, 8)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(11, 11, 11)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addComponent(question))
+                .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(imageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(answer1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(15, 15, 15)
+                                .addComponent(answer1_lb)))
                         .addGap(18, 18, 18)
-                        .addComponent(imageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(39, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(answer1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(answer3, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(37, 37, 37)
-                        .addComponent(timer_lb)
-                        .addGap(69, 69, 69))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(answer2, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(15, 15, 15)
+                                .addComponent(answer2_lb)))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(answer3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(15, 15, 15)
+                                .addComponent(answer3_lb)))
+                        .addGap(38, 38, 38)
+                        .addComponent(timer_lb)))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         pack();
@@ -244,8 +270,11 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton answer1;
+    private javax.swing.JLabel answer1_lb;
     private javax.swing.JButton answer2;
+    private javax.swing.JLabel answer2_lb;
     private javax.swing.JButton answer3;
+    private javax.swing.JLabel answer3_lb;
     private javax.swing.JPanel imageContainer;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel question;
@@ -281,8 +310,11 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
            //byte[] finalarr = Files.readAllBytes(Paths.get("Challenges\\imagens\\000003.jpg"));
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             
-            for(byte[] i : image)
-                outputStream.write(i);
+            for(byte[] i : image){
+                if(i!=null)
+                    outputStream.write(i);
+                else break;
+            }
           
            this.image = ImageIO.read(new ByteArrayInputStream(outputStream.toByteArray())); 
 
@@ -310,7 +342,7 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
             
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             for(byte[] m : music){
-                if(m.length>0)
+                if(m!=null)
                     out.write(m);
             }
             

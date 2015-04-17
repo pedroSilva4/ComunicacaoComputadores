@@ -61,7 +61,9 @@ public class GameThread extends Thread implements Observer{
                      
                      byte[][] data = question.getData();
                      String qt = new String(data[11]);
-                     String[] answers = new String(data[11]).split(";");
+                     System.out.println(qt);
+                     String[] answers = new String(data[12]).split(";");
+                     System.out.println(new String(data[12]));
                      
                      //imagem
                      byte[][] image =new byte[50][];//valores seguros ? 
@@ -93,6 +95,7 @@ public class GameThread extends Thread implements Observer{
                      }
                     
                      Question q  = new Question(i, qt, answers,0, music, image);
+                     questions[i] = q;
                      new QuestionGUI(q,this,i).setVisible(true);
                      while(answer==0);
                      if(answer==-1){

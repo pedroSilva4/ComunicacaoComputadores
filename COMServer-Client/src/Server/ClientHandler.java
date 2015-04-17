@@ -94,7 +94,8 @@ public class ClientHandler extends Thread{
                      packet = new DatagramPacket(data, data.length);
                      socket.send(packet);
                      //questao enviada
-                     
+                      sleep(50);
+                      
                      byte[][] media = questions.get(i).getImage();
                      int hasnext = 1;
                      for(int j = 0; j<media.length;j++){
@@ -105,7 +106,7 @@ public class ClientHandler extends Thread{
                         data = PDU.toBytes(imagem);
                         packet = new DatagramPacket(data, data.length);
                         socket.send(packet);
-                     
+                        sleep(50);
                      }
                      //envia confirmação ou retransmissao?
                     //imagem enviada
@@ -114,10 +115,11 @@ public class ClientHandler extends Thread{
                      for(int j = 0; j<media.length;j++){
                         if(j==media.length-1) hasnext = 0;
 
-                        PDU imagem = REPLY_Builder.REPLY_AUDIO(0,challengeMorA,i,j,media[j],hasnext);
-                        data = PDU.toBytes(imagem);
+                        PDU musica = REPLY_Builder.REPLY_AUDIO(0,challengeMorA,i,j,media[j],hasnext);
+                        data = PDU.toBytes(musica);
                         packet = new DatagramPacket(data, data.length);
                         socket.send(packet);   
+                        sleep(50);
                      }
                      //envia confirmação ou retransmissao?
                      
@@ -145,6 +147,8 @@ public class ClientHandler extends Thread{
               }
             }
         } catch (IOException ex) {
+            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }finally{
             socket.close();
@@ -218,7 +222,7 @@ public class ClientHandler extends Thread{
                    
                     GregorianCalendar cal = new GregorianCalendar();
                                 cal.setTime(Date.from(Instant.now()));
-                                cal.add(Calendar.MINUTE, 5);
+                                cal.add(Calendar.MINUTE, 1);
                                      
                     boolean b = this.challengeInfo.make_challenge(name,datef.format(cal.getTime()),timef.format(cal.getTime()), packetAdress, port);
                     if(b){
