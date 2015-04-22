@@ -35,6 +35,7 @@ public class Register_Login extends javax.swing.JFrame {
        this.ComunicationPort = ComunicationPort;
        this.label = label;
        initComponents();
+       this.setLocationRelativeTo(null);
     }
 
     /**

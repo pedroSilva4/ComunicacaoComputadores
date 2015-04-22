@@ -76,7 +76,7 @@ public class ChallengesInfo {
        int i = 0;
        for(String ug: this.challenges.keySet())
        {
-           res[i] = (ug+","+challenges.get(ug).data+","+challenges.get(ug).time).getBytes();
+           res[i] = (ug+","+challenges.get(ug).data+","+challenges.get(ug).time+","+challenges.get(ug).challenge.n_questions).getBytes();
            i++;
        }
        return res;

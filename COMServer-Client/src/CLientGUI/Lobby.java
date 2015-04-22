@@ -11,12 +11,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.ListModel;
 
 /**
  *
@@ -48,15 +47,18 @@ public class Lobby extends javax.swing.JFrame {
          this.label_userInfo_score.setText(points);
          bt_acceptChallenge.setEnabled(false);
          bt_removeChallenge.setEnabled(false);
+         this.activeChallenges = new HashMap<>();
          
          DefaultListModel<String> model = new DefaultListModel<>();
          
          for(String s:strs){
-             model.addElement(parcer(s));
+             String parsed = parser(s);
+             model.addElement(parsed);
+             this.activeChallenges.put(s, parsed);
          }
          
         this.list_challenges.setModel(model);
-         
+        this.setLocationRelativeTo(null); 
     }
     
     
@@ -174,8 +176,7 @@ public class Lobby extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(bt_removeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(41, 41, 41)
-                        .addComponent(panel_user_info, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                        .addComponent(panel_user_info, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(label_listChallenges)
                         .addGap(360, 360, 360)
@@ -226,7 +227,7 @@ public class Lobby extends javax.swing.JFrame {
             socket.receive(packet);
             PDU reply = PDU.fromBytes(packet.getData());
             byte[][] chs = reply.getData();
-            
+            this.activeChallenges = new HashMap<>();
             ArrayList<String> strs = new ArrayList<>();
             if(chs!=null){
                 for(byte[] b: chs){
@@ -235,12 +236,14 @@ public class Lobby extends javax.swing.JFrame {
                 }
             }
             
-            //parcer
+            //parser
             
             DefaultListModel<String> model = new DefaultListModel<>();
          
             for(String s:strs){
-                model.addElement(parcer(s));
+                String parsed = parser(s);
+                model.addElement(parsed);
+                this.activeChallenges.put(s, parsed); 
             }
          
             this.list_challenges.setModel(model);
@@ -257,12 +260,38 @@ public class Lobby extends javax.swing.JFrame {
     }//GEN-LAST:event_list_challengesValueChanged
 
     private void bt_acceptChallengeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_acceptChallengeActionPerformed
-        // TODO add your handling code here:
-        this.bt_makeChallenge.setEnabled(false);
-        this.bt_acceptChallenge.setEnabled(false);
+        try {
+            // TODO add your handling code here:
+            int i = this.list_challenges.getSelectedIndex();
+            String ch = (String) this.activeChallenges.keySet().toArray()[i];
+            String[] parts = ch.split(",");
+            PDU pdu = PDU_Builder.ACCEPT_CHALLENGE(label, parts[0]);
+            byte[] data = PDU.toBytes(pdu);
+            socket.send(new DatagramPacket(data, data.length));
+            
+            DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
+            socket.receive(packet);
+            pdu = PDU.fromBytes(packet.getData());
+            
+            
+            if(pdu.getData()[21]==null){
+                
+               new GameThread(socket, parts[0],parts[1], parts[2], Integer.parseInt(parts[3]), label).start();
+            }
+            else{
+                
+            }
+            
+            this.bt_makeChallenge.setEnabled(false);
+            this.bt_acceptChallenge.setEnabled(false);
+            this.bt_removeChallenge.setEnabled(false);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_bt_acceptChallengeActionPerformed
 
-        private String parcer(String date){
+        private String parser(String date){
             
             String[] tokens = date.split(",");
             String nome = tokens[0]+ " - ";

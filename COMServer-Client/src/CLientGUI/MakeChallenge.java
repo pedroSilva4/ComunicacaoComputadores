@@ -30,6 +30,7 @@ public class MakeChallenge extends javax.swing.JDialog {
         initComponents();
         this.label = label;
         this.socket = socket;
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -155,8 +156,8 @@ public class MakeChallenge extends javax.swing.JDialog {
             
             parse_reply(reply);
             
-            new ErrorWindow("Messagem", "Challenge Created", "Message",(JFrame)this.getParent()).wshow();
-            
+           
+            this.dispose();
             
         } catch (IOException ex) {
             Logger.getLogger(MakeChallenge.class.getName()).log(Level.SEVERE, null, ex);
@@ -233,7 +234,12 @@ public class MakeChallenge extends javax.swing.JDialog {
             String name = new String(data[7]);
             int n_questions = Integer.parseInt(new String(data[10]));
             
-            new GameThread(socket, name, date, time,n_questions).start();
+            
+            new GameThread(socket, name, date, time,n_questions,label).start();
+            new ErrorWindow("Messagem", "Challenge Created", "Message",(JFrame)this.getParent()).wshow();
+        }
+        else{
+            new ErrorWindow("Erro", new String(data[21]), "error", (JFrame)this.getParent()).wshow();
         }
     }
 

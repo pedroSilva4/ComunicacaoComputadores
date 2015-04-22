@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.PortUnreachableException;
 import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -70,8 +71,7 @@ public class ClientHandler extends Thread{
               if(!b){
                   if(challengeMorA==null){
                     request = new DatagramPacket(new byte[1024],1024,packetAdress,packetPort);  
-
-                    socket.receive(request);
+                    socket.receive( request );
 
                     PDU requestPDU = PDU.fromBytes(request.getData());
                       System.out.println("rquest tipo -> " + requestPDU.getType());
@@ -89,11 +89,12 @@ public class ClientHandler extends Thread{
                   ChallengeType ch  =this.challengeInfo.getUserChallenge(challengeMorA).challenge;
                   Map<Integer,Question> questions = ch.questions;
                   for(int i: questions.keySet()){
+                      
                      PDU question = REPLY_Builder.REPLY_QUESTION(0,questions.get(i).question, i, questions.get(i).answers);
                      data = PDU.toBytes(question);
                      packet = new DatagramPacket(data, data.length);
                      socket.send(packet);
-                     //questao enviada
+                     System.out.println("questao enviada");
                       sleep(50);
                       
                      byte[][] media = questions.get(i).getImage();
@@ -134,11 +135,11 @@ public class ClientHandler extends Thread{
                          //verificar se resposta correta e incrementar pontos.
                          
                          //responde ao pedido
-                     
-                      data = PDU.toBytes( REPLY_Builder.REPLY_ISRIGHTANWSER(0,0));
+                     /**
+                      /data = PDU.toBytes( REPLY_Builder.REPLY_ISRIGHTANWSER(0,0));
                       packet = new DatagramPacket(data, data.length);
                       socket.send(packet);
-                      
+                      **/
                       //depois passa para a proxima pergunta.
                      }
                      
@@ -233,10 +234,17 @@ public class ClientHandler extends Thread{
                       return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "JA existe um Challenge com esse NOme");
                 }
                 case 9:{//acept challenge - (nome do desafio) - nao pode aceitar desafios dele proprio
-                     String name = "uiui";
-                     this.challengeInfo.accept_challenge(name, packetAdress, port);
+                     
+                     byte[][] fields= requestPDU.getData();
+                    
+                     String name = new String(fields[0]);
+                        
+                     boolean b = this.challengeInfo.accept_challenge(name, packetAdress, port);
                      this.challengeMorA=name;
-                    return null;
+                     
+                     if(!b) return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "Desafio não existe, ou ja esta a ser jogado");
+                    
+                     return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
                 }
                 case 10:{//delele challenge - (nome do desafio) - ou apaga o que é destinado, e o que fez.
                     

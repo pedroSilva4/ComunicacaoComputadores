@@ -27,6 +27,7 @@ public class Intro extends javax.swing.JFrame {
      */
     public Intro() {
         initComponents();
+         this.setLocationRelativeTo(null);
     }
 
     /**

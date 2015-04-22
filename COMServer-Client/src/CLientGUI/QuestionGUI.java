@@ -83,6 +83,7 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         this.ansInfo = new AnswerInformer();
         ansInfo.addObserver(gt);
         n_question  =qt;
+        this.setLocationRelativeTo(null);
     }
 
     /**
