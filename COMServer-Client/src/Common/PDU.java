@@ -72,6 +72,7 @@ public class PDU implements Serializable{
             
             return o;
         } catch (IOException | ClassNotFoundException ex) {
+            ex.printStackTrace();
             return null;
         }
     }
