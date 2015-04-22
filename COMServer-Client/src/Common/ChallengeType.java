@@ -106,4 +106,8 @@ public class ChallengeType {
 
         return ret;
     }
+
+    synchronized public Map<Integer, Question> getQuestions() {
+       return this.questions;
+    }
 }

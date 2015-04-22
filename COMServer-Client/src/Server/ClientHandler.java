@@ -8,20 +8,16 @@ package Server;
 import Common.UserChallenge;
 import Common.ChallengeType;
 import Common.PDU;
-import Client.PDU_Builder;
 import Common.Question;
-import Server.Clients.Client;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.PortUnreachableException;
 import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -86,8 +82,8 @@ public class ClientHandler extends Thread{
                  }
               }else{
                   System.out.println("GameTime");
-                  ChallengeType ch  =this.challengeInfo.getUserChallenge(challengeMorA).challenge;
-                  Map<Integer,Question> questions = ch.questions;
+                  ChallengeType ch  =this.challengeInfo.getUserChallenge(challengeMorA).getChallengeType();
+                  Map<Integer,Question> questions = ch.getQuestions();
                   for(int i: questions.keySet()){
                       
                      PDU question = REPLY_Builder.REPLY_QUESTION(0,questions.get(i).question, i, questions.get(i).answers);

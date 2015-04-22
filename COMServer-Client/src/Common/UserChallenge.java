@@ -32,8 +32,12 @@ public class UserChallenge {
        this.makerAddress=makerAddress;   
     }
 
-    public void setAcceptedInfo(InetAddress accpetedAddress,int port) {
+    synchronized public void setAcceptedInfo(InetAddress accpetedAddress,int port) {
        this.acceptedAddress=accpetedAddress;
        this.acceptedPort = port;            
+    }
+
+    synchronized public ChallengeType getChallengeType() {
+        return this.challenge;
     }
 }
