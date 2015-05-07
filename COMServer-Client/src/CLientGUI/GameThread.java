@@ -35,10 +35,10 @@ public class GameThread extends Thread implements Observer{
     int answer = 0;
     private int answertime = 0;
     int label;
-  
+    Lobby.buttonBlocktrigger b;
     
     
-    public GameThread(DatagramSocket socket, String name,String date, String time,int n_questions,int label){
+    public GameThread(DatagramSocket socket, String name,String date, String time,int n_questions,int label,Lobby.buttonBlocktrigger b){
         this.socket = socket;
         this.name = name;
         this.date = date;
@@ -46,6 +46,7 @@ public class GameThread extends Thread implements Observer{
         this.n_questions =n_questions;
         questions = new Question[n_questions];
         this.label = label;
+        this.b = b;
     }
     
     
@@ -56,6 +57,7 @@ public class GameThread extends Thread implements Observer{
                 System.out.println("gametime");
                 
                 if(isGameTime()){
+                    b.blockButtons();
                     System.out.println("//////->"+n_questions);
                     for(int i=0;i<n_questions;i++){
                          DatagramPacket packet = new DatagramPacket(new byte[5000], 5000);
@@ -135,7 +137,7 @@ public class GameThread extends Thread implements Observer{
                     System.out.println("desafio terminado");
                 }
                 else{
-                    sleep(15000);
+                    sleep(5000);
                 }
          }
         } catch (ParseException | InterruptedException | IOException ex) {
@@ -150,7 +152,7 @@ public class GameThread extends Thread implements Observer{
                 cal.setTime(datef.parse(finaltime));
         Calendar cal2 = Calendar.getInstance();
         
-        return (cal.getTimeInMillis()-cal2.getTimeInMillis() <= 30000);
+        return (cal.getTimeInMillis()-cal2.getTimeInMillis() <= 7500);
     }
 
     @Override

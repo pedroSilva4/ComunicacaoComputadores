@@ -13,6 +13,8 @@ import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -21,7 +23,7 @@ import javax.swing.DefaultListModel;
  *
  * @author fdr
  */
-public class Lobby extends javax.swing.JFrame {
+public class Lobby extends javax.swing.JFrame implements Observer{
 
     /**
      * Creates new form Lobby
@@ -212,7 +214,9 @@ public class Lobby extends javax.swing.JFrame {
 
     private void bt_makeChallengeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_makeChallengeActionPerformed
         // TODO add your handling code here:
-        new MakeChallenge(this, true,socket,label).setVisible(true);
+        buttonBlocktrigger b = new buttonBlocktrigger();
+        b.addObserver(this);
+        new MakeChallenge(this, true,socket,label,b).setVisible(true);
     }//GEN-LAST:event_bt_makeChallengeActionPerformed
 
     private void button_list_challengesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_list_challengesActionPerformed
@@ -275,8 +279,9 @@ public class Lobby extends javax.swing.JFrame {
             
             
             if(pdu.getData()[21]==null){
-                
-               new GameThread(socket, parts[0],parts[1], parts[2], Integer.parseInt(parts[3]), label).start();
+               buttonBlocktrigger b = new buttonBlocktrigger();
+               b.addObserver(this);
+               new GameThread(socket, parts[0],parts[1], parts[2], Integer.parseInt(parts[3]), label,b).start();
             }
             else{
                 
@@ -380,4 +385,23 @@ public class Lobby extends javax.swing.JFrame {
     private javax.swing.JLabel ui_nome;
     private javax.swing.JLabel ui_score;
     // End of variables declaration//GEN-END:variables
+
+    
+    public class buttonBlocktrigger extends Observable{
+        
+        public void blockButtons(){
+            this.setChanged();
+            this.notifyObservers();
+        }
+    }
+    
+    @Override
+    public void update(Observable o, Object arg) {
+        this.bt_acceptChallenge.setEnabled(false);
+        this.bt_makeChallenge.setEnabled(false);
+        this.bt_removeChallenge.setEnabled(false);
+        this.button_list_challenges.setEnabled(false);
+        //aparece timer para as perguntas!!!!
+        //era nice
+    }
 }
