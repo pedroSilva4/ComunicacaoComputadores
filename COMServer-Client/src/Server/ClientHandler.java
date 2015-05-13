@@ -93,10 +93,11 @@ public class ClientHandler extends Thread{
                     }
                 }catch(SocketException e){
                   System.out.println("no answer from client");
-                 }   catch (IOException ex) {                            
+                 }catch (IOException ex) {                            
                          Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                      }                            
               }else{
+                  
                   System.out.println("GameTime");
                   ChallengeType ch  =this.challengeInfo.getUserChallenge(challengeMorA).getChallengeType();
                   Map<Integer,Question> questions = ch.getQuestions();
@@ -104,6 +105,7 @@ public class ClientHandler extends Thread{
                       
 
                       try {
+                          socket.setSoTimeout(120000);
                           PDU question = REPLY_Builder.REPLY_QUESTION(0,questions.get(i).question, i, questions.get(i).answers);
                           data = PDU.toBytes(question);
                           packet = new DatagramPacket(data, data.length);
@@ -124,6 +126,23 @@ public class ClientHandler extends Thread{
                               sleep(50);
                           }
                           //envia confirmação ou retransmissao?
+                          boolean confirmed = false;
+                          while(!confirmed){
+                              packet = new DatagramPacket(new byte[1024], 1024);
+                              socket.receive(packet);
+                              PDU qConfirm = PDU.fromBytes(packet.getData());
+                              if(qConfirm.getType()==0){
+                                    confirmed = true;
+                              }
+                              else{
+                                  //retransmit
+                                  int partToTransmit = Integer.parseInt(new String(qConfirm.getData()[2]));
+                                   PDU imagem = REPLY_Builder.REPLY_IMAGE(0,challengeMorA,i, partToTransmit,media[partToTransmit],0);
+                                   data = PDU.toBytes(imagem);
+                                   packet = new DatagramPacket(data, data.length);
+                                   socket.send(packet);
+                              }
+                          }
                           //imagem enviada
                           hasnext =1;
                           media = questions.get(i).getMusic();

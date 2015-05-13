@@ -9,6 +9,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +25,8 @@ import java.util.logging.Logger;
  * @author Pedro
  */
 public class PDU implements Serializable{
+
+    
     private int inc = 0;
     private final float version;
     private final int security;
@@ -98,5 +102,23 @@ public class PDU implements Serializable{
     
     public int getHashNext(){
         return this.hasnext;
+    }
+    
+    static public ArrayList<Integer> check_state(byte[][] image,int parts) {
+        boolean flag = true;
+        ArrayList<Integer> rt = new ArrayList<>();
+        for(int i=0 ; i<=parts ; i++){
+                if(image[i]==null)
+                {
+                  rt.add(i);
+                  flag = false;
+                }
+        }
+        if(!flag)
+        {
+            return rt;
+        }
+        
+        return null;
     }
 }

@@ -22,6 +22,10 @@ public final class PDU_Builder {
         return new PDU(0.0f, 0,1, label, 0, 0, null,0);
     }
     
+    static public PDU OK_PDU(int label){
+        return new PDU(0.0f, 0,0, label, 0, 0, null,0);
+    }
+    
     static public PDU REGISTER_PDU(String name,String nick,byte[] password,int label){
         int size = 0;
         byte[][] data = new byte[3][];

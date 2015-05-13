@@ -6,7 +6,6 @@
 package CLientGUI;
 
 import Client.PDU_Builder;
-import Common.ChallengeType;
 import Common.PDU;
 import Common.Question;
 import java.io.IOException;
@@ -15,6 +14,7 @@ import java.net.DatagramSocket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Observable;
@@ -75,17 +75,49 @@ public class GameThread extends Thread implements Observer{
                          //imagem
                          byte[][] image =new byte[50][];//valores seguros ? 
                           int hasnextpart = 1;
+                          int part = 0;
                          while(hasnextpart==1){
 
                             packet = new DatagramPacket(new byte[50000], 50000);
                             socket.receive(packet);
                             PDU imagePart =PDU.fromBytes(packet.getData());
                             data = imagePart.getData();
-                            int part = Integer.parseInt(new String(data[17]));
+                            part = Integer.parseInt(new String(data[17]));
                             image[part] = data[16];
 
                             hasnextpart = imagePart.getHashNext();
                          }
+                         //confirma packets
+                         boolean confirmed = false;
+                         while(!confirmed){
+                                ArrayList<Integer> missingParts = PDU.check_state(image,part);
+                                if(missingParts==null){
+                                    //confirma
+                                    PDU confirmPDU = PDU_Builder.OK_PDU(label);
+                                    byte[] datasend = PDU.toBytes(confirmPDU);
+                                    packet = new DatagramPacket(datasend, datasend.length);
+                                    socket.send(packet);
+                                    confirmed = true;
+                                }
+                                else{
+                                    //ou pede para transmitir
+                                    for(int p : missingParts){
+                                        //request
+                                        PDU retransmitPDU = PDU_Builder.RETRANSMIT(label,this.name,i, p);
+                                        byte[] datasend = PDU.toBytes(retransmitPDU);
+                                        packet = new DatagramPacket(datasend, datasend.length);
+                                        socket.send(packet);
+                                        //receive
+                                         packet = new DatagramPacket(new byte[50000], 50000);
+                                         socket.receive(packet);
+                                         PDU imagePart =PDU.fromBytes(packet.getData());
+                                         data = imagePart.getData();
+                                         part = Integer.parseInt(new String(data[17]));
+                                         image[part] = data[16];
+                                    }
+                                }
+                         }
+                         
                          hasnextpart = 1;
                          //musica
                          byte[][] music = new byte[100][];
@@ -95,7 +127,7 @@ public class GameThread extends Thread implements Observer{
                             socket.receive(packet);
                             PDU musicPart =PDU.fromBytes(packet.getData());
                             data = musicPart.getData();
-                            int part = Integer.parseInt(new String(data[17]));
+                            part = Integer.parseInt(new String(data[17]));
                             music[part] = data[18];
 
                             hasnextpart = musicPart.getHashNext();
