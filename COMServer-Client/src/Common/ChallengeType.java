@@ -59,6 +59,7 @@ public class ChallengeType {
              answers[0] = parts[2];
              answers[1] = parts[3];
              answers[2] = parts[4];
+              System.out.println(parts[5]);
              Question q = new Question(nq,parts[1],answers,Integer.parseInt(parts[5]),music,image);
              this.questions.put(nq,q);
             

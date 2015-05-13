@@ -81,16 +81,16 @@ public class ClientHandler extends Thread{
                         
                         socket.receive( request );
 
-                    PDU requestPDU = PDU.fromBytes(request.getData());
-                      System.out.println("rquest tipo -> " + requestPDU.getType());
-                    PDU replyPDU  = parsePDU(requestPDU);
-                    if(replyPDU!= null){
-                      if(replyPDU.getType()==4) logout=true;
+                        PDU requestPDU = PDU.fromBytes(request.getData());
+                          System.out.println("rquest tipo -> " + requestPDU.getType());
+                        PDU replyPDU  = parsePDU(requestPDU);
+                        if(replyPDU!= null){
+                          if(replyPDU.getType()==4) logout=true;
 
-                      byte[] replyData = PDU.toBytes(replyPDU);
-                      reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
-                      socket.send(reply);
-                    }
+                          byte[] replyData = PDU.toBytes(replyPDU);
+                          reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
+                          socket.send(reply);
+                        }
                 }catch(SocketException e){
                   System.out.println("no answer from client");
                  }catch (IOException ex) {                            
@@ -156,23 +156,45 @@ public class ClientHandler extends Thread{
                               sleep(50);
                           }
                           //envia confirmação ou retransmissao?
-                          
+                          confirmed = false;
+                          while(!confirmed){
+                              packet = new DatagramPacket(new byte[1024], 1024);
+                              socket.receive(packet);
+                              PDU qConfirm = PDU.fromBytes(packet.getData());
+                              if(qConfirm.getType()==0){
+                                    confirmed = true;
+                              }
+                              else{
+                                  //retransmit
+                                  int partToTransmit = Integer.parseInt(new String(qConfirm.getData()[2]));
+                                   PDU musica = REPLY_Builder.REPLY_AUDIO(0,challengeMorA,i, partToTransmit,media[partToTransmit],0);
+                                   data = PDU.toBytes(musica);
+                                   packet = new DatagramPacket(data, data.length);
+                                   socket.send(packet);
+                              }
+                          }
                           //musica enviada
                           packet = new DatagramPacket(new byte[1024],1024);
                           socket.receive(packet);
                           
                           PDU answer = PDU.fromBytes(packet.getData());
                           if(answer.getType()==11){
-                              //answer.getData()[]
-                              
+                               int answerOpt = Integer.parseInt(new String(answer.getData()[0]));
+                               int isright = 0;
                               //verificar se resposta correta e incrementar pontos.
-                              
+                               if((questions.get(i).getRightAwnser())==answerOpt){
+                                   this.clients.addPoints(clients.loggedIn.get(port), 2);
+                                   isright = 1;
+                                   
+                               }else{
+                                    this.clients.addPoints(clients.loggedIn.get(port), -1);
+                               }
                               //responde ao pedido
-                              /**
-                               * /data = PDU.toBytes( REPLY_Builder.REPLY_ISRIGHTANWSER(0,0));
-                               * packet = new DatagramPacket(data, data.length);
-                               * socket.send(packet);
-                               **/
+                             
+                               data = PDU.toBytes( REPLY_Builder.REPLY_ISRIGHTANWSER(0,isright));
+                               packet = new DatagramPacket(data, data.length);
+                               socket.send(packet);
+                               
                               //depois passa para a proxima pergunta.
                           }} catch (IOException ex) {
                           Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);

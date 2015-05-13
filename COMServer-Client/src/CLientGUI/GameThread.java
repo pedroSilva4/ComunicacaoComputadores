@@ -6,6 +6,7 @@
 package CLientGUI;
 
 import Client.PDU_Builder;
+import Client.User;
 import Common.PDU;
 import Common.Question;
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 
 /**
  *
@@ -35,10 +37,11 @@ public class GameThread extends Thread implements Observer{
     int answer = 0;
     private int answertime = 0;
     int label;
+    User user;
     Lobby.buttonBlocktrigger b;
     
     
-    public GameThread(DatagramSocket socket, String name,String date, String time,int n_questions,int label,Lobby.buttonBlocktrigger b){
+    public GameThread(DatagramSocket socket, String name,String date, String time,int n_questions,int label,Lobby.buttonBlocktrigger b,User u){
         this.socket = socket;
         this.name = name;
         this.date = date;
@@ -47,6 +50,8 @@ public class GameThread extends Thread implements Observer{
         questions = new Question[n_questions];
         this.label = label;
         this.b = b;
+        this.user = u;
+        accPoints = 0;
     }
     
     
@@ -59,6 +64,9 @@ public class GameThread extends Thread implements Observer{
                 if(isGameTime()){
                     b.blockButtons();
                     System.out.println("//////->"+n_questions);
+                    
+                    LoadChallengeProgressBar.createAndShowGUI();
+                    
                     for(int i=0;i<n_questions;i++){
                          DatagramPacket packet = new DatagramPacket(new byte[5000], 5000);
                          socket.receive(packet);
@@ -132,6 +140,36 @@ public class GameThread extends Thread implements Observer{
 
                             hasnextpart = musicPart.getHashNext();
                          }
+                         
+                         confirmed = false;
+                         while(!confirmed){
+                                ArrayList<Integer> missingParts = PDU.check_state(music,part);
+                                if(missingParts==null){
+                                    //confirma
+                                    PDU confirmPDU = PDU_Builder.OK_PDU(label);
+                                    byte[] datasend = PDU.toBytes(confirmPDU);
+                                    packet = new DatagramPacket(datasend, datasend.length);
+                                    socket.send(packet);
+                                    confirmed = true;
+                                }
+                                else{
+                                    //ou pede para transmitir
+                                    for(int p : missingParts){
+                                        //request
+                                        PDU retransmitPDU = PDU_Builder.RETRANSMIT(label,this.name,i, p);
+                                        byte[] datasend = PDU.toBytes(retransmitPDU);
+                                        packet = new DatagramPacket(datasend, datasend.length);
+                                        socket.send(packet);
+                                        //receive
+                                         packet = new DatagramPacket(new byte[50000], 50000);
+                                         socket.receive(packet);
+                                         PDU musicPart =PDU.fromBytes(packet.getData());
+                                         data = musicPart.getData();
+                                         part = Integer.parseInt(new String(data[17]));
+                                         music[part] = data[18];
+                                    }
+                                }
+                         }
 
                          Question q  = new Question(i, qt, answers,0, music, image);
                          questions[i] = q;
@@ -143,30 +181,40 @@ public class GameThread extends Thread implements Observer{
                          if(answer==-1){
                              //nao respondeu
                              System.out.println("nao respondeu de todo");
-                             PDU rightanswer = PDU_Builder.ANSWER(label, answer, name, i);
-                             byte[] dataTosend =  PDU.toBytes(rightanswer);
-                             packet = new DatagramPacket(dataTosend,dataTosend.length);
-                             socket.send(packet);
-
-                             //aguardar pela resposta -- nao vai ter pontos...
-
-
                          }
-                         else{
-                             // respondeu xD
-                              System.out.println("respondeu");
-                              PDU rightanswer = PDU_Builder.ANSWER(label, answer, name, i);
-                              byte[] dataTosend =  PDU.toBytes(rightanswer);
-                              packet = new DatagramPacket(dataTosend,dataTosend.length);
-                              socket.send(packet);
+                       
+                        // respondeu xD
+                         System.out.println("respondeu "+answer);
+                         PDU rightanswer = PDU_Builder.ANSWER(label, answer, name, i);
+                         byte[] dataTosend =  PDU.toBytes(rightanswer);
+                         packet = new DatagramPacket(dataTosend,dataTosend.length);
+                         socket.send(packet);
+                          System.out.println("enviou reposta");
+                         //aguardar pela resposta -- vai dar pontos.
 
-                              //aguardar pela resposta -- vai dar pontos.
+                         packet = new DatagramPacket(new byte[1024], 1024);
+                         socket.receive(packet);
+                         rightanswer  = PDU.fromBytes(packet.getData());
+                         int isrightAnswer = Integer.parseInt(new String(rightanswer.getData()[14]));
+                         int points = -1;
+                         System.out.println("is"+answer+" a resposta correta?" + isrightAnswer);
+                         if(isrightAnswer==1){
+                           points = 2;
+                           System.out.print("Correcto!\n");
                          }
+
+                         this.user.points+=points;
+                         accPoints+=points;
+                         //pontos incrementados, proxima questao!
+                         
+                         
                          answer = 0;
                          answertime=0;
                     }
                     gametime = false;
                     System.out.println("desafio terminado");
+                    new ErrorWindow("Jogo Terminado","Pontos Obtidos :"+accPoints+"\nTotal Pontos: "+user.points, "message", new JFrame()).wshow();
+                    b.enableButtons();
                 }
                 else{
                     sleep(5000);
@@ -184,7 +232,7 @@ public class GameThread extends Thread implements Observer{
                 cal.setTime(datef.parse(finaltime));
         Calendar cal2 = Calendar.getInstance();
         
-        return (cal.getTimeInMillis()-cal2.getTimeInMillis() <= 7500);
+        return (cal.getTimeInMillis()-cal2.getTimeInMillis() <= 10000);
     }
 
     @Override

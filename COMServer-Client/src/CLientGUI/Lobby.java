@@ -6,6 +6,7 @@
 package CLientGUI;
 
 import Client.PDU_Builder;
+import Client.User;
 import Common.PDU;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -30,10 +31,10 @@ public class Lobby extends javax.swing.JFrame implements Observer{
      */
     
     DatagramSocket socket;
-    String user,points;
     Register_Login regsiter_login;
     int label;
     Map<String,String> activeChallenges;
+    User user;
     public Lobby() {
         initComponents();
     }
@@ -41,12 +42,13 @@ public class Lobby extends javax.swing.JFrame implements Observer{
     public Lobby(String nome, String points, DatagramSocket socket, Register_Login rl,int label,ArrayList<String> strs) throws IOException {
          initComponents();
          this.socket = socket;
-         this.user = nome;
-         this.points = points;
+         this.user = new User();
+         this.user.username = nome;
+         this.user.points = Integer.parseInt(points);
          this.regsiter_login = rl;
          this.label = label;   
-         this.label_userInfo_nome.setText(nome);
-         this.label_userInfo_score.setText(points);
+         this.label_userInfo_nome.setText(this.user.username);
+         this.label_userInfo_score.setText(""+this.user.points);
          bt_acceptChallenge.setEnabled(false);
          bt_removeChallenge.setEnabled(false);
          this.activeChallenges = new HashMap<>();
@@ -88,7 +90,6 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         bt_removeChallenge = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(522, 382));
         setResizable(false);
 
         list_challenges.setModel(new javax.swing.AbstractListModel() {
@@ -216,7 +217,7 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         // TODO add your handling code here:
         buttonBlocktrigger b = new buttonBlocktrigger();
         b.addObserver(this);
-        new MakeChallenge(this, true,socket,label,b).setVisible(true);
+        new MakeChallenge(this, true,socket,label,b,this.user).setVisible(true);
     }//GEN-LAST:event_bt_makeChallengeActionPerformed
 
     private void button_list_challengesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_list_challengesActionPerformed
@@ -281,7 +282,7 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             if(pdu.getData()[21]==null){
                buttonBlocktrigger b = new buttonBlocktrigger();
                b.addObserver(this);
-               new GameThread(socket, parts[0],parts[1], parts[2], Integer.parseInt(parts[3]), label,b).start();
+               new GameThread(socket, parts[0],parts[1], parts[2], Integer.parseInt(parts[3]), label,b,this.user).start();
             }
             else{
                 
@@ -391,17 +392,27 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         
         public void blockButtons(){
             this.setChanged();
-            this.notifyObservers();
+            this.notifyObservers(false);
+        }
+        
+        public void enableButtons(){
+            this.setChanged();
+            this.notifyObservers(true);
         }
     }
     
     @Override
     public void update(Observable o, Object arg) {
-        this.bt_acceptChallenge.setEnabled(false);
-        this.bt_makeChallenge.setEnabled(false);
-        this.bt_removeChallenge.setEnabled(false);
-        this.button_list_challenges.setEnabled(false);
+        boolean b = (boolean)arg;
+        this.bt_acceptChallenge.setEnabled(b);
+        this.bt_makeChallenge.setEnabled(b);
+        this.bt_removeChallenge.setEnabled(b);
+        this.button_list_challenges.setEnabled(b);
         //aparece timer para as perguntas!!!!
         //era nice
+            //faz update dos pontos
+            this.label_userInfo_nome.setText(this.user.username);
+            this.label_userInfo_score.setText(""+this.user.points);
+        
     }
 }

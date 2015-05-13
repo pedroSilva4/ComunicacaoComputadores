@@ -223,7 +223,7 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
     }//GEN-LAST:event_answer1ActionPerformed
 
     private void answer2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_answer2ActionPerformed
-        this.ansInfo.answer(this.n_question, 3, this.time);
+        this.ansInfo.answer(this.n_question, 2, this.time);
         this.answer = true;
     }//GEN-LAST:event_answer2ActionPerformed
 

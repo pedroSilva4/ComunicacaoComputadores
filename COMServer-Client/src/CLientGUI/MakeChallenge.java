@@ -6,6 +6,7 @@
 package CLientGUI;
 
 import Client.PDU_Builder;
+import Client.User;
 import Common.PDU;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -25,14 +26,16 @@ public class MakeChallenge extends javax.swing.JDialog {
      */
     DatagramSocket socket;
     int label;
+    User user;
     Lobby.buttonBlocktrigger b;
-    public MakeChallenge(java.awt.Frame parent, boolean modal, DatagramSocket socket,int label,Lobby.buttonBlocktrigger b) {
+    public MakeChallenge(java.awt.Frame parent, boolean modal, DatagramSocket socket,int label,Lobby.buttonBlocktrigger b,User u) {
         super(parent, modal);
         initComponents();
         this.label = label;
         this.socket = socket;
         this.setLocationRelativeTo(null);
         this.b = b;
+        this.user = u;
     }
 
     /**
@@ -206,7 +209,7 @@ public class MakeChallenge extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                MakeChallenge dialog = new MakeChallenge(new javax.swing.JFrame(), true,null,0,null);
+                MakeChallenge dialog = new MakeChallenge(new javax.swing.JFrame(), true,null,0,null,null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -237,7 +240,7 @@ public class MakeChallenge extends javax.swing.JDialog {
             int n_questions = Integer.parseInt(new String(data[10]));
             
             
-            new GameThread(socket, name, date, time,n_questions,label,this.b).start();
+            new GameThread(socket, name, date, time,n_questions,label,this.b,this.user).start();
             new ErrorWindow("Messagem", "Challenge Created", "Message",(JFrame)this.getParent()).wshow();
         }
         else{
