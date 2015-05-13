@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.net.SocketPermission;
+import java.security.Permission;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -34,6 +36,8 @@ public class Server {
     private static Map<Integer,ClientHandler> connectionsMap;
     public static void main(String[] args) throws SocketException, IOException {
         // TODO code application logic here
+        Permission p = new SocketPermission("localhost:5000-","connect,accept,listen");
+        
         threadPort = 5001;
         connectionsMap = new HashMap<>();
         Clients clients = new Clients();

@@ -92,6 +92,7 @@ public class ClientHandler extends Thread{
                       
                      PDU question = REPLY_Builder.REPLY_QUESTION(0,questions.get(i).question, i, questions.get(i).answers);
                      data = PDU.toBytes(question);
+                     if(data==null) System.out.println("ERRRRRROOOOOOOOROROROORRROROR");
                      packet = new DatagramPacket(data, data.length);
                      socket.send(packet);
                      System.out.println("questao enviada");
