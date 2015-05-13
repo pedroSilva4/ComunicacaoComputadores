@@ -33,13 +33,11 @@ public class Server {
      */
     private static  int threadPort;
     
-    private static Map<Integer,ClientHandler> connectionsMap;
     public static void main(String[] args) throws SocketException, IOException {
         // TODO code application logic here
         Permission p = new SocketPermission("localhost:5000-","connect,accept,listen");
         
         threadPort = 5001;
-        connectionsMap = new HashMap<>();
         Clients clients = new Clients();
         ChallengesInfo challengesInfo = new ChallengesInfo();
         new ServerHelloHandler(clients,challengesInfo).start();
@@ -73,10 +71,10 @@ public class Server {
                   System.out.println(message.toString());
                   
                   //recebe hello
-                  connectionsMap.put(threadPort, new ClientHandler(firstLabel,threadPort,packet,clients,challengeInfo));
+                  
                   
                   //inicia a thread do cliente no servidor
-                  connectionsMap.get(threadPort).start();
+                  new ClientHandler(firstLabel,threadPort,packet,clients,challengeInfo).start();
                   
                   //incrementa para proximo cliente
                   threadPort++;

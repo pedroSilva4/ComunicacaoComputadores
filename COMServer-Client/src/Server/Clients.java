@@ -5,7 +5,6 @@
  */
 package Server;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,5 +73,10 @@ public class Clients {
         return this.ranking.get(nick);
     }
     
-    
+    synchronized public int addPoints(String nick,int points){
+        int p = this.ranking.get(nick);
+        p+=points;
+        this.ranking.replace(nick, p);
+        return p;
+    }
 }

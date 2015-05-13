@@ -8,20 +8,16 @@ package Server;
 import Common.UserChallenge;
 import Common.ChallengeType;
 import Common.PDU;
-import Client.PDU_Builder;
 import Common.Question;
-import Server.Clients.Client;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.PortUnreachableException;
 import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -57,21 +53,33 @@ public class ClientHandler extends Thread{
     public void run(){
        byte[] data = PDU.toBytes(REPLY_Builder.REPLY_OK(currentLabel));
        DatagramPacket packet = new DatagramPacket(data, data.length, packetAdress, packetPort);
+       
         try {
-            socket.send(packet);
             
+            socket.send(packet);
+        }catch(IOException e){
+            e.printStackTrace();
+            socket.close();
+            return;
+        }
             boolean logout = false;
             //currentLabel incrementa toma sempre o valor do PDU recebido pelo servidor, 
             //pois o servidor so faz reply, e os reply tens a mesma label que as mensagens dos clientes
             DatagramPacket request,reply;
             socket.connect(packetAdress, packetPort);
             boolean b;
+        
             while(!logout){
                  b = hasChallengeNow();
               if(!b){
-                  if(challengeMorA==null){
-                    request = new DatagramPacket(new byte[1024],1024,packetAdress,packetPort);  
-                    socket.receive( request );
+                  //if(challengeMorA==null){
+                    request = new DatagramPacket(new byte[1024],1024,packetAdress,packetPort); 
+                    
+                    try{
+                        if(challengeMorA!=null)
+                             socket.setSoTimeout(5000);
+                        
+                        socket.receive( request );
 
                     PDU requestPDU = PDU.fromBytes(request.getData());
                       System.out.println("rquest tipo -> " + requestPDU.getType());
@@ -83,78 +91,81 @@ public class ClientHandler extends Thread{
                       reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
                       socket.send(reply);
                     }
-                 }
+                }catch(SocketException e){
+                  System.out.println("no answer from client");
+                 }   catch (IOException ex) {                            
+                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                     }                            
               }else{
                   System.out.println("GameTime");
                   ChallengeType ch  =this.challengeInfo.getUserChallenge(challengeMorA).getChallengeType();
                   Map<Integer,Question> questions = ch.getQuestions();
                   for(int i: questions.keySet()){
                       
-                     PDU question = REPLY_Builder.REPLY_QUESTION(0,questions.get(i).question, i, questions.get(i).answers);
-                     data = PDU.toBytes(question);
-                     if(data==null) System.out.println("ERRRRRROOOOOOOOROROROORRROROR");
-                     packet = new DatagramPacket(data, data.length);
-                     socket.send(packet);
-                     System.out.println("questao enviada");
-                      sleep(50);
-                      
-                     byte[][] media = questions.get(i).getImage();
-                     int hasnext = 1;
-                     for(int j = 0; j<media.length;j++){
-                     
-                        if(j==media.length-1) hasnext = 0;
 
-                        PDU imagem = REPLY_Builder.REPLY_IMAGE(0,challengeMorA,i, j,media[j],hasnext);
-                        data = PDU.toBytes(imagem);
-                        packet = new DatagramPacket(data, data.length);
-                        socket.send(packet);
-                        sleep(50);
-                     }
-                     //envia confirmação ou retransmissao?
-                    //imagem enviada
-                     hasnext =1;
-                     media = questions.get(i).getMusic();
-                     for(int j = 0; j<media.length;j++){
-                        if(j==media.length-1) hasnext = 0;
-
-                        PDU musica = REPLY_Builder.REPLY_AUDIO(0,challengeMorA,i,j,media[j],hasnext);
-                        data = PDU.toBytes(musica);
-                        packet = new DatagramPacket(data, data.length);
-                        socket.send(packet);   
-                        sleep(50);
-                     }
-                     //envia confirmação ou retransmissao?
-                     
-                     //musica enviada                   
-                     packet = new DatagramPacket(new byte[1024],1024);
-                     socket.receive(packet);
-                     
-                     PDU answer = PDU.fromBytes(packet.getData());
-                     if(answer.getType()==11){
-                         //answer.getData()[]
-                         
-                         //verificar se resposta correta e incrementar pontos.
-                         
-                         //responde ao pedido
-                     /**
-                      /data = PDU.toBytes( REPLY_Builder.REPLY_ISRIGHTANWSER(0,0));
-                      packet = new DatagramPacket(data, data.length);
-                      socket.send(packet);
-                      **/
-                      //depois passa para a proxima pergunta.
-                     }
+                      try {
+                          PDU question = REPLY_Builder.REPLY_QUESTION(0,questions.get(i).question, i, questions.get(i).answers);
+                          data = PDU.toBytes(question);
+                          packet = new DatagramPacket(data, data.length);
+                          socket.send(packet);
+                          System.out.println("questao enviada");
+                          sleep(50);
+                          
+                          byte[][] media = questions.get(i).getImage();
+                          int hasnext = 1;
+                          for(int j = 0; j<media.length;j++){
+                              
+                              if(j==media.length-1) hasnext = 0;
+                              
+                              PDU imagem = REPLY_Builder.REPLY_IMAGE(0,challengeMorA,i, j,media[j],hasnext);
+                              data = PDU.toBytes(imagem);
+                              packet = new DatagramPacket(data, data.length);
+                              socket.send(packet);
+                              sleep(50);
+                          }
+                          //envia confirmação ou retransmissao?
+                          //imagem enviada
+                          hasnext =1;
+                          media = questions.get(i).getMusic();
+                          for(int j = 0; j<media.length;j++){
+                              if(j==media.length-1) hasnext = 0;
+                              
+                              PDU musica = REPLY_Builder.REPLY_AUDIO(0,challengeMorA,i,j,media[j],hasnext);
+                              data = PDU.toBytes(musica);
+                              packet = new DatagramPacket(data, data.length);
+                              socket.send(packet);
+                              sleep(50);
+                          }
+                          //envia confirmação ou retransmissao?
+                          
+                          //musica enviada
+                          packet = new DatagramPacket(new byte[1024],1024);
+                          socket.receive(packet);
+                          
+                          PDU answer = PDU.fromBytes(packet.getData());
+                          if(answer.getType()==11){
+                              //answer.getData()[]
+                              
+                              //verificar se resposta correta e incrementar pontos.
+                              
+                              //responde ao pedido
+                              /**
+                               * /data = PDU.toBytes( REPLY_Builder.REPLY_ISRIGHTANWSER(0,0));
+                               * packet = new DatagramPacket(data, data.length);
+                               * socket.send(packet);
+                               **/
+                              //depois passa para a proxima pergunta.
+                          }} catch (IOException ex) {
+                          Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                      } catch (InterruptedException ex) {
+                          Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                      }
                      
                   }
                   challengeMorA = null;
               }
             }
-        } catch (IOException ex) {
-            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }finally{
-            socket.close();
-        }
+        
     }
     
     public PDU parsePDU(PDU requestPDU){
@@ -287,7 +298,7 @@ public class ClientHandler extends Thread{
                 String finaltime = ch.data+ch.time;
                 cal.setTime(datef.parse(finaltime));
                 Calendar cal2 = Calendar.getInstance();
-                if(cal2.equals(cal) || cal2.after(cal)){
+                if(cal.getTimeInMillis() - cal2.getTimeInMillis() < 5000){
                     return true;
                 }
             } catch (ParseException ex) {
