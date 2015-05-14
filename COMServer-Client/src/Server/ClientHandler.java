@@ -58,7 +58,7 @@ public class ClientHandler extends Thread{
             
             socket.send(packet);
         }catch(IOException e){
-            e.printStackTrace();
+             Logger.getLogger("ClientHandler", e.getMessage());
             socket.close();
             return;
         }
@@ -91,10 +91,10 @@ public class ClientHandler extends Thread{
                           reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
                           socket.send(reply);
                         }
-                }catch(SocketException e){
-                  System.out.println("no answer from client");
+                }catch(SocketException ex){
+                   System.out.println("ClientHandler -> "+ex.getMessage());
                  }catch (IOException ex) {                            
-                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                         System.out.println("ClientHandler -> "+ex.getMessage());
                      }                            
               }else{
                   
@@ -178,6 +178,11 @@ public class ClientHandler extends Thread{
                           socket.receive(packet);
                           
                           PDU answer = PDU.fromBytes(packet.getData());
+                          
+                          if(answer.getType()==5){
+                              System.out.println("jogador Desistiu!");
+                              break;
+                          }
                           if(answer.getType()==11){
                                int answerOpt = Integer.parseInt(new String(answer.getData()[0]));
                                int isright = 0;
@@ -196,10 +201,8 @@ public class ClientHandler extends Thread{
                                socket.send(packet);
                                
                               //depois passa para a proxima pergunta.
-                          }} catch (IOException ex) {
-                          Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-                      } catch (InterruptedException ex) {
-                          Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                          }} catch (IOException | InterruptedException ex) {
+                          System.out.println("ClientHandler -> "+ex.getMessage());
                       }
                      
                   }

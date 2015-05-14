@@ -5,7 +5,10 @@
         <group>
             <file>file:/C:/Users/Pedro/Documents/GitHub/ComunicacaoComputadores/COMServer-Client/src/CLientGUI/LoadChallengeProgressBar.java</file>
             <file>file:/C:/Users/Pedro/Documents/GitHub/ComunicacaoComputadores/COMServer-Client/src/CLientGUI/Lobby.java</file>
+            <file>file:/C:/Users/Pedro/Documents/GitHub/ComunicacaoComputadores/COMServer-Client/src/Server/ClientHandler.java</file>
+            <file>file:/C:/Users/Pedro/Documents/GitHub/ComunicacaoComputadores/COMServer-Client/src/Client/PDU_Builder.java</file>
             <file>file:/C:/Users/Pedro/Documents/GitHub/ComunicacaoComputadores/COMServer-Client/src/CLientGUI/GameThread.java</file>
+            <file>file:/C:/Users/Pedro/Documents/GitHub/ComunicacaoComputadores/COMServer-Client/src/CLientGUI/Register_Login.java</file>
             <file>file:/C:/Users/Pedro/Documents/GitHub/ComunicacaoComputadores/COMServer-Client/src/CLientGUI/QuestionGUI.java</file>
         </group>
     </open-files>

@@ -5,9 +5,13 @@
  */
 package CLientGUI;
 
+import CLientGUI.QuestionGUI.AnswerInformer;
 import Common.Question;
 import com.alee.laf.WebLookAndFeel;
 import java.awt.Graphics;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -23,6 +27,8 @@ import javax.swing.JPanel;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 import java.util.*;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -62,7 +68,13 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
       
         try {
             timer.addObserver(this);
-            new QuestionRunner(music,timer).start();
+            QuestionRunner runner = new QuestionRunner(music,timer);
+            
+            //ao fechar enviar pedido de quit
+            WindowListener exitListener = new WindowAdapterImpl(this.ansInfo, this,runner);
+            this.addWindowListener(exitListener);
+            
+            runner.start();
         } catch (IOException ex) {
             Logger.getLogger(QuestionGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -70,6 +82,8 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
     }
     public QuestionGUI(Question question,GameThread gt,int qt) {
         this.q = question;
+        this.ansInfo = new AnswerInformer();
+        ansInfo.addObserver(gt);
         initComponents();
         this.imageContainer.add(new PaintImage(q.getImage()),"image");
         this.answer1_lb.setText(q.getAnswer1());
@@ -79,9 +93,9 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         timer = new TimerUpdate(); 
         time = 60;
         timer_lb.setText("1:00");
+        //
         init(q.getMusic());
-        this.ansInfo = new AnswerInformer();
-        ansInfo.addObserver(gt);
+        //
         n_question  =qt;
         this.setLocationRelativeTo(null);
     }
@@ -106,7 +120,7 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         answer2_lb = new javax.swing.JLabel();
         answer3_lb = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         answer1.setText("A");
@@ -232,6 +246,7 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         this.answer = true;
     }//GEN-LAST:event_answer3ActionPerformed
 
+    
     /**
      * @param args the command line arguments
      */
@@ -286,10 +301,13 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
     public void update(java.util.Observable o, Object arg) {
         
             time = (int)arg;
-            if(time>=10)
-                this.timer_lb.setText("00:" + time);
+            if(time>=60)
+                this.timer_lb.setText("1:00");
             else
-                this.timer_lb.setText("00:0" + time);
+                if(time>=10)
+                    this.timer_lb.setText("00:" + time);
+                else
+                    this.timer_lb.setText("00:0" + time);
         
         if(time==0)
         {
@@ -370,7 +388,13 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
             } catch (JavaLayerException ex) {
                 Logger.getLogger(QuestionGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
+            
         }
+        public synchronized void closeMp3(){
+                this.mp3player.close();
+            }
+
         
         class MP3Player extends Thread{
             public void run(){
@@ -394,6 +418,37 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
             String s = ""+question+";"+opt+";"+time;
             this.setChanged();
             this.notifyObservers(s);
+        }
+    }
+
+    public class WindowAdapterImpl extends WindowAdapter {
+
+        public WindowAdapterImpl(AnswerInformer as,JFrame f,QuestionRunner runner) {
+            this.ansInfo = as;
+             p= runner;
+            caller = f;
+        }
+        AnswerInformer ansInfo;
+        JFrame caller;
+        QuestionRunner p ;
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+           
+            int confirm = JOptionPane.showOptionDialog(caller, "Quit Challenge?", "Quit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            if (confirm==JOptionPane.YES_OPTION) {
+                
+                
+                answer = true;
+                this.ansInfo.answer(n_question, -2, time);
+                System.out.println("closed Question");
+                try{
+                    p.closeMp3();
+                }catch(NullPointerException ex){
+                    System.out.println("-----##----"+ex.getMessage());
+                }                
+                this.caller.dispose();
+            }
         }
     }
 }

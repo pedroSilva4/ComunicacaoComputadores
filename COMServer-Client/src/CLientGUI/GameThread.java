@@ -182,7 +182,19 @@ public class GameThread extends Thread implements Observer{
                              //nao respondeu
                              System.out.println("nao respondeu de todo");
                          }
-                       
+                         if(answer == -2){
+                             //Comando Quit na janela e por isso tem de ser enviado para
+                             // o servidor para terminar o desafio
+                             
+                             PDU quit_PDU = PDU_Builder.QUIT_PDU(label);
+                             byte[] dataTosend =  PDU.toBytes(quit_PDU);
+                             packet = new DatagramPacket(dataTosend,dataTosend.length);
+                             socket.send(packet);
+                             System.out.println("enviou pedido Quit");
+                             break;
+                             
+                             
+                         }
                         // respondeu xD
                          System.out.println("respondeu "+answer);
                          PDU rightanswer = PDU_Builder.ANSWER(label, answer, name, i);
