@@ -5,6 +5,7 @@
  */
 package Server;
 
+import Common.REPLY_Builder;
 import Common.UserChallenge;
 import Common.ChallengeType;
 import Common.PDU;
@@ -85,22 +86,42 @@ public class ClientHandler extends Thread{
                           System.out.println("rquest tipo -> " + requestPDU.getType());
                         PDU replyPDU  = parsePDU(requestPDU);
                         if(replyPDU!= null){
-                          if(replyPDU.getType()==4) logout=true;
+                          if(requestPDU.getType()==4){
+                            if(challengeMorA!=null) 
+                             {
+                                 this.challengeInfo.getUserChallenge(challengeMorA).userLoggedOut(port);
+                                 challengeMorA = null;
+                                 System.out.println("Challenge Cancelled for me!");
+                                 try {                    
+                                       socket.setSoTimeout(0);
 
+                                     } catch (SocketException ex) {
+                                            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                                     }
+
+                             }
+                              
+                          }
                           byte[] replyData = PDU.toBytes(replyPDU);
                           reply = new DatagramPacket(replyData, replyData.length, packetAdress, packetPort);
                           socket.send(reply);
+                          
+                         
+                          
                         }
                 }catch(SocketException ex){
                    System.out.println("ClientHandler -> "+ex.getMessage());
                  }catch (IOException ex) {                            
                          System.out.println("ClientHandler -> "+ex.getMessage());
                      }                            
-              }else{
+              }
+              else{
                   
                   System.out.println("GameTime");
                   ChallengeType ch  =this.challengeInfo.getUserChallenge(challengeMorA).getChallengeType();
                   Map<Integer,Question> questions = ch.getQuestions();
+                  
+                  boolean quitted =false;
                   for(int i: questions.keySet()){
                       
 
@@ -181,6 +202,8 @@ public class ClientHandler extends Thread{
                           
                           if(answer.getType()==5){
                               System.out.println("jogador Desistiu!");
+                              quitted= true;
+                              this.challengeInfo.getUserChallenge(challengeMorA).userQuited(port);
                               break;
                           }
                           if(answer.getType()==11){
@@ -189,10 +212,12 @@ public class ClientHandler extends Thread{
                               //verificar se resposta correta e incrementar pontos.
                                if((questions.get(i).getRightAwnser())==answerOpt){
                                    this.clients.addPoints(clients.loggedIn.get(port), 2);
+                                   this.challengeInfo.getUserChallenge(challengeMorA).incPoints(port, 2);
                                    isright = 1;
                                    
                                }else{
                                     this.clients.addPoints(clients.loggedIn.get(port), -1);
+                                    this.challengeInfo.getUserChallenge(challengeMorA).incPoints(port, 2);
                                }
                               //responde ao pedido
                              
@@ -206,8 +231,14 @@ public class ClientHandler extends Thread{
                       }
                      
                   }
+                  //recebe pedido de end se nao saiu
+                  if(!quitted){
+                      System.out.println(this.clients.loggedIn.get(port)+" : "+this.challengeInfo.getUserChallenge(challengeMorA).getPoints(port));
+                  }
+                  //
                   challengeMorA = null;
               }
+                
             }
         
     }
@@ -253,16 +284,6 @@ public class ClientHandler extends Thread{
                     
                     return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
                 }
-                case 5:{//quit  - (sem parametros) - Utilizador jogo do desafio;
-                    
-                    
-                    return null;
-                }
-                case 6:{//end   - (sem parametros) - No final do jogo informa da pontuação dos intervenientes 
-                    
-                    
-                    return null;
-                }
                 case 7:{
                         //
                     
@@ -274,18 +295,49 @@ public class ClientHandler extends Thread{
                     byte[][] fields= requestPDU.getData();
                     
                     String name = new String(fields[0]);
+                    
+                    boolean b  =false;
                     SimpleDateFormat datef = new SimpleDateFormat("yyMMdd");
                     SimpleDateFormat timef = new SimpleDateFormat("HHmmss");
-                   
-                    GregorianCalendar cal = new GregorianCalendar();
-                                cal.setTime(Date.from(Instant.now()));
-                                cal.add(Calendar.MINUTE, 1);
-                                     
-                    boolean b = this.challengeInfo.make_challenge(name,datef.format(cal.getTime()),timef.format(cal.getTime()), packetAdress, port);
+                    SimpleDateFormat totalf  = new SimpleDateFormat("yyMMddHHmmss");
+                    
+                    String date,time;
+                     GregorianCalendar cal = new GregorianCalendar();
+                                    cal.setTime(Date.from(Instant.now()));
+                    if(fields[1] == null && fields[2]== null){
+
+                        cal.add(Calendar.MINUTE, 1);
+
+                        date = datef.format(cal.getTime());
+                        time = timef.format(cal.getTime());
+
+                    }else{
+                        date = new String(fields[1]);
+                        time = new String(fields[2]);
+                        
+                         GregorianCalendar cal2 = new GregorianCalendar();
+                        try {
+                            cal2.setTime(totalf.parse(date+time));
+                            //verificar se minimo de 5 min
+                            if(cal2.getTimeInMillis()< cal.getTimeInMillis()+300000)
+                            {
+                                cal.add(Calendar.MINUTE, 5);
+
+                                 date = datef.format(cal.getTime());
+                                 time = timef.format(cal.getTime());
+                            }
+                        } catch (ParseException ex) {
+                            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                       
+                    }
+                    
+                    b = this.challengeInfo.make_challenge(name,date,time, packetAdress, port);
                     if(b){
                       this.challengeMorA = name;
-                      int n_questions = this.challengeInfo.getUserChallenge(name).challenge.n_questions;
-                      return REPLY_Builder.REPLY_CHALLENGE(requestPDU.getLabel(), name,datef.format(cal.getTime()),timef.format(cal.getTime()),n_questions);
+                      int n_questions = this.challengeInfo.getUserChallenge(name).getChType().n_questions;
+                      return REPLY_Builder.REPLY_CHALLENGE(requestPDU.getLabel(), name,date,time,n_questions);
+                      
                     }else 
                       return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "JA existe um Challenge com esse NOme");
                 }
@@ -295,7 +347,7 @@ public class ClientHandler extends Thread{
                     
                      String name = new String(fields[0]);
                         
-                     boolean b = this.challengeInfo.accept_challenge(name, packetAdress, port);
+                     boolean b = this.challengeInfo.accept_challenge(name,port);
                      this.challengeMorA=name;
                      
                      if(!b) return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "Desafio não existe, ou ja esta a ser jogado");
@@ -303,16 +355,6 @@ public class ClientHandler extends Thread{
                      return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
                 }
                 case 10:{//delele challenge - (nome do desafio) - ou apaga o que é destinado, e o que fez.
-                    
-                    
-                    return null;
-                }
-                case 11:{//answer - (numero resposta, nome do desafio, numero da questao)
-                    
-                    
-                    return null;
-                }
-                case 12:{//retransmit - (nome do desafio/numero questao que se quer jogar/numero de bloco de ordem do audio) - 
                     
                     
                     return null;
@@ -339,10 +381,10 @@ public class ClientHandler extends Thread{
             try {
                 Calendar cal = new GregorianCalendar();
                 DateFormat datef = new SimpleDateFormat("yyMMddHHmmss");
-                String finaltime = ch.data+ch.time;
+                String finaltime = ch.getData()+ch.getTime();
                 cal.setTime(datef.parse(finaltime));
                 Calendar cal2 = Calendar.getInstance();
-                if(cal.getTimeInMillis() - cal2.getTimeInMillis() < 5000){
+                if(cal.getTimeInMillis() - cal2.getTimeInMillis() < 2500){
                     return true;
                 }
             } catch (ParseException ex) {

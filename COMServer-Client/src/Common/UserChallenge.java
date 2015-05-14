@@ -5,8 +5,8 @@
  */
 package Common;
 
-import Common.ChallengeType;
-import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -14,30 +14,88 @@ import java.net.InetAddress;
  * @author Pedro
  */
 public class UserChallenge {
-    public String name;
+    private final String name;
     public String data;
-    public int makerPort;
-    public InetAddress makerAddress;
-    public int acceptedPort;
-    public InetAddress acceptedAddress;
-    public String time;
-    public ChallengeType challenge;
+    private final String time;
+    private final ChallengeType challengeType;
+    private final Map<Integer,User> usersPlaying = new HashMap<>();
+    private int nUsers = 0; 
+    private int usersfinished = 0;
+    private final int maker;
 
-    public UserChallenge(String name, String date, String time, ChallengeType get, int makerPort,InetAddress makerAddress) {
+    synchronized public String getTime(){
+        return this.time;
+    }
+    
+    synchronized public String getData(){
+        return this.data;
+    }
+    
+     synchronized public ChallengeType getChType(){
+        return this.challengeType;
+    }
+    
+    public UserChallenge(String name, String date, String time, ChallengeType get, int makerPort) {
        this.name = name;
        this.data =date;
        this.time = time;
-       this.challenge = get;
-       this.makerPort=makerPort;
-       this.makerAddress=makerAddress;   
+       this.challengeType = get;
+       User u = new User();
+       u.port = makerPort;
+       u.points=0;
+       this.usersPlaying.put(makerPort,u);
+       nUsers++;
+       maker = makerPort;
     }
 
-    synchronized public void setAcceptedInfo(InetAddress accpetedAddress,int port) {
-       this.acceptedAddress=accpetedAddress;
-       this.acceptedPort = port;            
+    synchronized public void setAcceptedInfo(int port) {
+              User u = new User();
+              u.port = port;
+              u.points=0;
+              this.usersPlaying.put(port,u);
+              nUsers++;
     }
-
+    
+    synchronized public void userLoggedOut(int port){
+       
+               usersPlaying.remove(port);
+               nUsers--;   
+    }
+     synchronized public void userQuited(int port){
+       usersPlaying.remove(port);
+       nUsers--;
+    }
+    synchronized public int maker(){
+        return this.usersPlaying.get(maker).port;
+    }
+    
+    synchronized public boolean isGameReady(){
+        if(nUsers<=1) return false;
+        
+        usersfinished=0;
+        return true;
+    } 
+    
+    synchronized public void finish(){
+        usersfinished++;
+        this.notifyAll();
+    }
+    
+    synchronized public void incPoints(int port,int points){
+        usersPlaying.get(port).points+=points;
+    }
+    
+    
     synchronized public ChallengeType getChallengeType() {
-        return this.challenge;
+        return this.challengeType;
     }
+
+    synchronized public String getPoints(int port) {
+        return this.usersPlaying.get(port).points+""; //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    synchronized public boolean allfinished(){
+        return (nUsers==usersfinished);
+    }
+
 }

@@ -1,10 +1,4 @@
-package Client;
-
-
-import Common.PDU;
-import com.sun.swing.internal.plaf.basic.resources.basic;
-import java.util.HashMap;
-import java.util.Map;
+package Common;
 
 /*
  * To change this license header: return  choose License Headers in Project Properties.
@@ -71,10 +65,15 @@ public final class PDU_Builder {
         byte[][] data = new byte[3][];
         data[0] = challenge.getBytes();
         size += data[0].length;
-        data[1] =date.getBytes();
-        size += data[1].length;
-        data[2] = time.getBytes();
-        size += data[2].length;
+        if((date !=null)) {
+            data[1] =date.getBytes();
+            size += data[1].length;
+        }
+        if((time != null)) {
+            data[2] = time.getBytes();
+            size += data[2].length;
+        }
+        
         
         return new PDU(0.0f,0,8,label,3,size,data,0);
     }

@@ -15,35 +15,24 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.plaf.basic.*;
 
-public final class LoadChallengeProgressBar extends JPanel {
-    
-    private final JProgressBar progress1 = new JProgressBar() {
+public final class WaitOnPlayersPB extends JPanel {
+    private static final JProgressBar progressBar = new JProgressBar() {
         @Override public void updateUI() {
             super.updateUI();
-            setUI(new ProgressCircleUI());
+            setUI(new PProgressCircleUI());
             setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
         }
     };
-    private static final JProgressBar progress2 = new JProgressBar() {
-        @Override public void updateUI() {
-            super.updateUI();
-            setUI(new ProgressCircleUI());
-            setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
-        }
-    };
-    public LoadChallengeProgressBar() {
+    public WaitOnPlayersPB() {
         super(new BorderLayout());
         //progress1.setForeground(new Color(0xAAFFAAAA));
-        progress2.setStringPainted(true);
-        progress2.setFont(progress2.getFont().deriveFont(24f));
+        progressBar.setStringPainted(true);
+        progressBar.setFont(progressBar.getFont().deriveFont(24f));
 
-        //JSlider slider = new JSlider();
-        //slider.putClientProperty("Slider.paintThumbArrowShape", Boolean.TRUE);
-        //progress1.setModel(slider.getModel());
-        //add(slider, BorderLayout.NORTH);
+        
         JPanel p = new JPanel(new GridLayout(1, 2));
-       // p.add(progress1);
-        p.add(progress2);
+       
+        p.add(progressBar);
         add(p);
         setPreferredSize(new Dimension(320, 240));
        
@@ -62,25 +51,66 @@ public final class LoadChallengeProgressBar extends JPanel {
                | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             ex.printStackTrace();
         }
-        JFrame frame = new JFrame("A Carregar Challenge");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.getContentPane().add(new LoadChallengeProgressBar());
+        JFrame frame = new JFrame("À Espera dos Outros Jogadores");
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.getContentPane().add(new WaitOnPlayersPB());
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         
          
-          SwingWorker<String, Void> worker = new Task(frame) {
+          SwingWorker<String, Void> worker = new PTask(frame) {
                     @Override public void done() {
+                       
                         frame.dispose();
                     }
                 };
-                worker.addPropertyChangeListener(new ProgressListener(progress2));
+                worker.addPropertyChangeListener(new PProgressListener(progressBar));
                 worker.execute();
     }
 }
 
-class ProgressCircleUI extends BasicProgressBarUI {
+class PTask extends SwingWorker<String, Void> {
+    private final JFrame parent;
+    public PTask(JFrame p){
+        parent = p;
+    }
+    @Override public String doInBackground() {
+        int current = 0;
+        int lengthOfTask = 100;
+        while (current <= lengthOfTask && !isCancelled()) {
+            try { // dummy task
+                Thread.sleep(100);
+            } catch (InterruptedException ie) {
+                return "Interrupted";
+            }
+            setProgress(100 * current/lengthOfTask);
+            current++;
+            if(current == 100) current = 1;
+        }
+        parent.dispose();
+        
+        return "Done";
+    }
+}
+
+class PProgressListener implements PropertyChangeListener {
+    private final JProgressBar progressBar;
+    PProgressListener(JProgressBar progressBar) {
+        this.progressBar = progressBar;
+        this.progressBar.setValue(0);
+    }
+    @Override public void propertyChange(PropertyChangeEvent evt) {
+        String strPropertyName = evt.getPropertyName();
+        if ("progress".equals(strPropertyName)) {
+            progressBar.setIndeterminate(false);
+            int progress = (Integer) evt.getNewValue();
+            progressBar.setValue(progress);
+        }
+    }
+}
+
+class PProgressCircleUI extends BasicProgressBarUI {
     @Override public Dimension getPreferredSize(JComponent c) {
         Dimension d = super.getPreferredSize(c);
         int v = Math.max(d.width, d.height);
@@ -130,51 +160,7 @@ class ProgressCircleUI extends BasicProgressBarUI {
         g2.fill(foreground);
         g2.dispose();
 
-        // Deal with possible text painting
-        if (progressBar.isStringPainted()) {
-            paintString(g, b.left, b.top, barRectWidth, barRectHeight, 0, b);
-        }
-    }
-}
-
-class Task extends SwingWorker<String, Void> {
-    private final JFrame parent;
-    public Task(JFrame p){
-        parent = p;
-    }
-    @Override public String doInBackground() {
-        int current = 0;
-        int lengthOfTask = 100;
-        while (current <= lengthOfTask && !isCancelled()) {
-            try { // dummy task
-                Thread.sleep(85);
-            } catch (InterruptedException ie) {
-                return "Interrupted";
-            }
-            setProgress(100 * current / lengthOfTask);
-            current++;
-        }
-        parent.dispose();
-        
-        return "Done";
-        
-        
-        
-    }
-}
-
-class ProgressListener implements PropertyChangeListener {
-    private final JProgressBar progressBar;
-    ProgressListener(JProgressBar progressBar) {
-        this.progressBar = progressBar;
-        this.progressBar.setValue(0);
-    }
-    @Override public void propertyChange(PropertyChangeEvent evt) {
-        String strPropertyName = evt.getPropertyName();
-        if ("progress".equals(strPropertyName)) {
-            progressBar.setIndeterminate(false);
-            int progress = (Integer) evt.getNewValue();
-            progressBar.setValue(progress);
-        }
+       
+       
     }
 }

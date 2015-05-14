@@ -3,10 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package CLientGUI;
+package Client;
 
-import Client.PDU_Builder;
-import Client.User;
+import CLientGUI.ErrorWindow;
+import CLientGUI.LoadChallengeProgressBar;
+import CLientGUI.Lobby;
+import CLientGUI.QuestionGUI;
+import Common.PDU_Builder;
+import Common.User;
 import Common.PDU;
 import Common.Question;
 import java.io.IOException;
@@ -41,24 +45,28 @@ public class GameThread extends Thread implements Observer{
     Lobby.buttonBlocktrigger b;
     
     
-    public GameThread(DatagramSocket socket, String name,String date, String time,int n_questions,int label,Lobby.buttonBlocktrigger b,User u){
+    
+    public GameThread(DatagramSocket socket,Lobby.buttonBlocktrigger b,User u){
         this.socket = socket;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.n_questions =n_questions;
-        questions = new Question[n_questions];
-        this.label = label;
         this.b = b;
         this.user = u;
         accPoints = 0;
     }
     
+    public void setChallengeData(String name,String date,String time,int n_questions,int label){
+         this.name = name;
+        this.date = date;
+        this.time = time;
+        this.n_questions =n_questions;
+        this.label = label;
+        this.questions = new Question[n_questions];
+    }
+    public boolean challengeQueued = true;
     
     public void run(){
-        boolean gametime = true;
+        
         try {
-            while(gametime){
+            while(challengeQueued){
                 System.out.println("gametime");
                 
                 if(isGameTime()){
@@ -223,7 +231,7 @@ public class GameThread extends Thread implements Observer{
                          answer = 0;
                          answertime=0;
                     }
-                    gametime = false;
+                    challengeQueued = false;
                     System.out.println("desafio terminado");
                     new ErrorWindow("Jogo Terminado","Pontos Obtidos :"+accPoints+"\nTotal Pontos: "+user.points, "message", new JFrame()).wshow();
                     b.enableButtons();

@@ -5,6 +5,7 @@
  */
 package CLientGUI;
 
+import Client.GameThread;
 import CLientGUI.QuestionGUI.AnswerInformer;
 import Common.Question;
 import com.alee.laf.WebLookAndFeel;

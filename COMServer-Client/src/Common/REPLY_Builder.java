@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Server;
+package Common;
 
 import Common.PDU;
+import Server.ChallengesInfo;
 import java.sql.Time;
 import java.util.Date;
 

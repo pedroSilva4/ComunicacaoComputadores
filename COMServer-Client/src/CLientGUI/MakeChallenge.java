@@ -5,8 +5,9 @@
  */
 package CLientGUI;
 
-import Client.PDU_Builder;
-import Client.User;
+import Client.GameThread;
+import Common.PDU_Builder;
+import Common.User;
 import Common.PDU;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -26,16 +27,14 @@ public class MakeChallenge extends javax.swing.JDialog {
      */
     DatagramSocket socket;
     int label;
-    User user;
-    Lobby.buttonBlocktrigger b;
-    public MakeChallenge(java.awt.Frame parent, boolean modal, DatagramSocket socket,int label,Lobby.buttonBlocktrigger b,User u) {
+    GameThread gt;
+    public MakeChallenge(java.awt.Frame parent, boolean modal, DatagramSocket socket,int label,GameThread gt) {
         super(parent, modal);
         initComponents();
         this.label = label;
         this.socket = socket;
         this.setLocationRelativeTo(null);
-        this.b = b;
-        this.user = u;
+        this.gt = gt;
     }
 
     /**
@@ -53,6 +52,7 @@ public class MakeChallenge extends javax.swing.JDialog {
         makeChallenge_ftf_Data = new javax.swing.JFormattedTextField();
         makeChallenge_date = new javax.swing.JLabel();
         makeChallenge_tff_hora = new javax.swing.JFormattedTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -91,25 +91,30 @@ public class MakeChallenge extends javax.swing.JDialog {
             }
         });
 
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("No minimo daqui a 5 min");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(makeChallenge_label_nome, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(makeChallenge_date, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(makeChallenge_date, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(makeChallenge_ftf_Data, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(makeChallenge_tff_hora, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(makeChallenge_tf_nome))
-                .addContainerGap(25, Short.MAX_VALUE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(makeChallenge_ftf_Data, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(makeChallenge_tff_hora, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(makeChallenge_tf_nome)))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -123,9 +128,11 @@ public class MakeChallenge extends javax.swing.JDialog {
                     .addComponent(makeChallenge_ftf_Data, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(makeChallenge_date)
                     .addComponent(makeChallenge_tff_hora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
                 .addComponent(jButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -138,31 +145,43 @@ public class MakeChallenge extends javax.swing.JDialog {
             String date = this.makeChallenge_ftf_Data.getText();
             String time= this.makeChallenge_tff_hora.getText();
            
-            // pora data e hora com estrutura correcta
+            // pora data e ho ra com estrutura correcta
             String[] tokens = date.split("/");
             
             
             date= tokens[2].substring(2)+tokens[1]+tokens[0];
-          
-            
+            if(date.trim().equals(""))
+            {
+                date = null;
+            }
             String[] tokenstime = time.split(":");
             time = tokenstime[0]+tokenstime[1]+"00";
+            if(time.trim().equals("00"))
+            {
+                time = null;
+            }
+            if(time == null && date == null) System.out.println("tudo nulo");
             
-            PDU request = PDU_Builder.MAKE_CHALLENGE(label, name, date, time);
-            byte[] data  = PDU.toBytes(request);
-            DatagramPacket packet = new DatagramPacket(data, data.length);
-            
-            socket.send(packet);
-            
-            packet = new DatagramPacket(new byte[1024], 1024);
-            socket.receive(packet);
-            
-            PDU reply = PDU.fromBytes(packet.getData());
-            
-            parse_reply(reply);
-            
+            if((time == null && date == null) || (time != null && date != null)){
+                PDU request = PDU_Builder.MAKE_CHALLENGE(label, name, date, time);
+                byte[] data  = PDU.toBytes(request);
+                DatagramPacket packet = new DatagramPacket(data, data.length);
+
+                socket.send(packet);
+
+                packet = new DatagramPacket(new byte[1024], 1024);
+                socket.receive(packet);
+
+                PDU reply = PDU.fromBytes(packet.getData());
+
+                parse_reply(reply);
+
+                this.dispose();
+                return;
+            }
            
-            this.dispose();
+            new ErrorWindow("Erro", "Erro ao criar Challenge, deve preencher\n os dois campos para o horario\n ou nenhum deles", 
+                            "error", new JFrame()).wshow();
             
         } catch (IOException ex) {
             Logger.getLogger(MakeChallenge.class.getName()).log(Level.SEVERE, null, ex);
@@ -209,7 +228,7 @@ public class MakeChallenge extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                MakeChallenge dialog = new MakeChallenge(new javax.swing.JFrame(), true,null,0,null,null);
+                MakeChallenge dialog = new MakeChallenge(new javax.swing.JFrame(), true,null,0,null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -223,6 +242,7 @@ public class MakeChallenge extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel makeChallenge_date;
     private javax.swing.JFormattedTextField makeChallenge_ftf_Data;
     private javax.swing.JLabel makeChallenge_label_nome;
@@ -240,7 +260,9 @@ public class MakeChallenge extends javax.swing.JDialog {
             int n_questions = Integer.parseInt(new String(data[10]));
             
             
-            new GameThread(socket, name, date, time,n_questions,label,this.b,this.user).start();
+           
+            gt.setChallengeData(name, date, time, n_questions, label);
+            gt.start();
             new ErrorWindow("Messagem", "Challenge Created", "Message",(JFrame)this.getParent()).wshow();
         }
         else{

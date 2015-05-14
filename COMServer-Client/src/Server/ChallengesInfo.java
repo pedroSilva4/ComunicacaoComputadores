@@ -10,8 +10,6 @@ import Common.UserChallenge;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.sql.Time;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -36,17 +34,16 @@ public class ChallengesInfo {
        String type= (String)challengesTypes.keySet().toArray()[i];
        if(challenges.containsKey(name)) return false;
        
-       challenges.put(name, new UserChallenge(name,date,time,challengesTypes.get(type),port,makerAddress));
+       challenges.put(name, new UserChallenge(name,date,time,challengesTypes.get(type),port));
        
        return true;
     }
     
-    synchronized public boolean accept_challenge(String name,InetAddress acceptedAddress,int port)
+    synchronized public boolean accept_challenge(String name,int port)
     {
         if(!challenges.containsKey(name)) return false;
        
-        challenges.get(name).setAcceptedInfo(acceptedAddress, port);
-       
+        challenges.get(name).setAcceptedInfo(port);
         
         return true;
     }
@@ -69,20 +66,20 @@ public class ChallengesInfo {
         }
     }
 
-    synchronized byte[][] getListChallenges() {
+    public synchronized byte[][] getListChallenges() {
        if(this.challenges.keySet().isEmpty()) return null;
         
        byte[][] res = new byte[this.challenges.keySet().size()][]; 
        int i = 0;
        for(String ug: this.challenges.keySet())
        {
-           res[i] = (ug+","+challenges.get(ug).data+","+challenges.get(ug).time+","+challenges.get(ug).challenge.n_questions).getBytes();
+           res[i] = (ug+","+challenges.get(ug).data+","+challenges.get(ug).getTime()+","+challenges.get(ug).getChType().n_questions).getBytes();
            i++;
        }
        return res;
     }
 
-    synchronized UserChallenge getUserChallenge(String name) {
+    public synchronized UserChallenge getUserChallenge(String name) {
         return this.challenges.get(name);
     }
 }

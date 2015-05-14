@@ -5,7 +5,7 @@
  */
 package CLientGUI;
 
-import Client.PDU_Builder;
+import Common.PDU_Builder;
 import Common.PDU;
 import java.io.IOException;
 import java.net.DatagramPacket;

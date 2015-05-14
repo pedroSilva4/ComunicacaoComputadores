@@ -5,9 +5,12 @@
  */
 package CLientGUI;
 
-import Client.PDU_Builder;
-import Client.User;
+import Client.GameThread;
+import Common.PDU_Builder;
+import Common.User;
 import Common.PDU;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -19,6 +22,8 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -35,8 +40,11 @@ public class Lobby extends javax.swing.JFrame implements Observer{
     int label;
     Map<String,String> activeChallenges;
     User user;
+    GameThread gt;
     public Lobby() {
         initComponents();
+        
+        
     }
 
     public Lobby(String nome, String points, DatagramSocket socket, Register_Login rl,int label,ArrayList<String> strs) throws IOException {
@@ -63,6 +71,9 @@ public class Lobby extends javax.swing.JFrame implements Observer{
          
         this.list_challenges.setModel(model);
         this.setLocationRelativeTo(null); 
+        
+        WindowAdapter adapter = new LogOutAdapterImpl(this,socket,rl);
+        this.addWindowListener(adapter);
     }
     
     
@@ -89,7 +100,7 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         bt_makeChallenge = new javax.swing.JButton();
         bt_removeChallenge = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         list_challenges.setModel(new javax.swing.AbstractListModel() {
@@ -217,7 +228,8 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         // TODO add your handling code here:
         buttonBlocktrigger b = new buttonBlocktrigger();
         b.addObserver(this);
-        new MakeChallenge(this, true,socket,label,b,this.user).setVisible(true);
+        this.gt = new GameThread(socket,b,this.user);
+        new MakeChallenge(this, true,socket,label,this.gt).setVisible(true);
     }//GEN-LAST:event_bt_makeChallengeActionPerformed
 
     private void button_list_challengesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_list_challengesActionPerformed
@@ -282,7 +294,9 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             if(pdu.getData()[21]==null){
                buttonBlocktrigger b = new buttonBlocktrigger();
                b.addObserver(this);
-               new GameThread(socket, parts[0],parts[1], parts[2], Integer.parseInt(parts[3]), label,b,this.user).start();
+                this.gt = new GameThread(socket,b,this.user);
+                this.gt.setChallengeData(parts[0],parts[1], parts[2], Integer.parseInt(parts[3]), label);
+                this.gt.start();
             }
             else{
                 
@@ -408,11 +422,62 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         this.bt_makeChallenge.setEnabled(b);
         this.bt_removeChallenge.setEnabled(b);
         this.button_list_challenges.setEnabled(b);
+        this.setVisible(b);
         //aparece timer para as perguntas!!!!
         //era nice
             //faz update dos pontos
             this.label_userInfo_nome.setText(this.user.username);
             this.label_userInfo_score.setText(""+this.user.points);
         
+    }
+    
+    
+    
+    public class LogOutAdapterImpl extends WindowAdapter {
+
+        public LogOutAdapterImpl(JFrame frame,DatagramSocket socket,Register_Login rl) {
+            this.frame = frame;
+            this.socket = socket;
+            this.rl = rl;
+        }
+        JFrame frame;
+        DatagramSocket socket;
+        Register_Login rl;
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+           
+            int confirm = JOptionPane.showOptionDialog(frame, "Logging out,\nAre you sure?", "Log Out Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            if (confirm==JOptionPane.YES_OPTION) {
+                try {
+                    PDU logout = PDU_Builder.LOGOUT_PDU(label);
+                    byte[] data = PDU.toBytes(logout);
+                    DatagramPacket packet = new DatagramPacket(data, data.length);
+                    socket.send(packet);
+                    
+                    
+                    packet = new DatagramPacket(new byte[1024], 1024);
+                    socket.receive(packet);
+                    
+                    logout = PDU.fromBytes(packet.getData());
+                    if(logout.getType()==0){
+                        System.out.println("LOGOUT OK");
+                    }
+                    //eu sei que esta deprecated mas é seguro parar esta thread visto nao existir estruturas partilhadas
+                    if(gt!=null){
+                        System.out.println("is not null!");
+                        gt.challengeQueued =false;
+                       // if(gt.isAlive())
+                         //   gt.interrupt();
+                    }
+                    //
+                    frame.dispose();
+                    rl.setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+                }
+              
+            }
+        }
     }
 }
