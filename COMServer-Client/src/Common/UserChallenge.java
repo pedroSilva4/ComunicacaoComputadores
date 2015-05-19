@@ -60,10 +60,12 @@ public class UserChallenge {
        
                usersPlaying.remove(port);
                nUsers--;   
+               this.notifyAll();
     }
      synchronized public void userQuited(int port){
        usersPlaying.remove(port);
        nUsers--;
+       this.notifyAll();
     }
     synchronized public int maker(){
         return this.usersPlaying.get(maker).port;
@@ -95,7 +97,7 @@ public class UserChallenge {
     }
     
     synchronized public boolean allfinished(){
-        return (nUsers==usersfinished);
+        return (nUsers<=usersfinished);
     }
 
 }

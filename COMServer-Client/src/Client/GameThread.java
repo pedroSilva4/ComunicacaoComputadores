@@ -9,6 +9,7 @@ import CLientGUI.ErrorWindow;
 import CLientGUI.LoadChallengeProgressBar;
 import CLientGUI.Lobby;
 import CLientGUI.QuestionGUI;
+import CLientGUI.WaitOnPlayersPB;
 import Common.PDU_Builder;
 import Common.User;
 import Common.PDU;
@@ -68,7 +69,7 @@ public class GameThread extends Thread implements Observer{
         try {
             while(challengeQueued){
                 System.out.println("gametime");
-                
+                boolean quitted  =false;
                 if(isGameTime()){
                     b.blockButtons();
                     System.out.println("//////->"+n_questions);
@@ -199,6 +200,7 @@ public class GameThread extends Thread implements Observer{
                              packet = new DatagramPacket(dataTosend,dataTosend.length);
                              socket.send(packet);
                              System.out.println("enviou pedido Quit");
+                             quitted = true;
                              break;
                              
                              
@@ -234,6 +236,25 @@ public class GameThread extends Thread implements Observer{
                     challengeQueued = false;
                     System.out.println("desafio terminado");
                     new ErrorWindow("Jogo Terminado","Pontos Obtidos :"+accPoints+"\nTotal Pontos: "+user.points, "message", new JFrame()).wshow();
+                 
+                    if(!quitted){
+                    PDU end = PDU_Builder.END_PDU(label);
+                    byte[] data = PDU.toBytes(end);
+                    DatagramPacket packet = new DatagramPacket(data, data.length);
+                    socket.send(packet);
+                    
+                    //show waiting on other players!
+                    
+                    packet = new DatagramPacket(new byte[2048], 2048);
+                    socket.receive(packet);
+               
+                    end  =PDU.fromBytes(packet.getData());
+                    //apresentar ranking do jogo!
+                    
+                     new ErrorWindow("Jogo Terminado",new String(end.getData()[20]), "message", new JFrame()).wshow();
+                    
+                    }
+                    
                     b.enableButtons();
                 }
                 else{

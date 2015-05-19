@@ -5,10 +5,7 @@
  */
 package Common;
 
-import Common.PDU;
 import Server.ChallengesInfo;
-import java.sql.Time;
-import java.util.Date;
 
 /**
  *
@@ -185,8 +182,15 @@ public class REPLY_Builder {
        
         size = data.length;
         }
-        System.out.println("sup ");
         return new PDU(0.0f, 0, 0,label, 1, size, data, hasnext);
+    }
+
+    public static PDU REPLY_SCOREALL(int label, String scores) {
+        int size = 0;
+        byte data[][] = new byte[22][];
+        data[20] = scores.getBytes();
+        size += data[20].length;
+        return new PDU(0.0f, 0, 0,label, 1, size, data, 0);   
     }
        
 }

@@ -40,11 +40,11 @@ public final class WaitOnPlayersPB extends JPanel {
     public static void main(String... args) {
         EventQueue.invokeLater(new Runnable() {
             @Override public void run() {
-                createAndShowGUI();
+                createAndShowGUI(true);
             }
         });
     }
-    public static void createAndShowGUI() {
+    public static void createAndShowGUI(boolean b) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException
@@ -59,7 +59,7 @@ public final class WaitOnPlayersPB extends JPanel {
         frame.setVisible(true);
         
          
-          SwingWorker<String, Void> worker = new PTask(frame) {
+          SwingWorker<String, Void> worker = new PTask(frame,b) {
                     @Override public void done() {
                        
                         frame.dispose();
@@ -72,21 +72,23 @@ public final class WaitOnPlayersPB extends JPanel {
 
 class PTask extends SwingWorker<String, Void> {
     private final JFrame parent;
-    public PTask(JFrame p){
+    boolean b;
+    public PTask(JFrame p,boolean b){
         parent = p;
+        this.b = b;
     }
     @Override public String doInBackground() {
         int current = 0;
         int lengthOfTask = 100;
-        while (current <= lengthOfTask && !isCancelled()) {
+        while (current <= lengthOfTask && !isCancelled() && this.b) {
             try { // dummy task
-                Thread.sleep(100);
+                Thread.sleep(75);
             } catch (InterruptedException ie) {
                 return "Interrupted";
             }
             setProgress(100 * current/lengthOfTask);
             current++;
-            if(current == 100) current = 1;
+            if(current == 100) current = 0;
         }
         parent.dispose();
         

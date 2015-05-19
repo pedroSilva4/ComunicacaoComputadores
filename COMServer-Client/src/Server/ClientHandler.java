@@ -233,7 +233,30 @@ public class ClientHandler extends Thread{
                   }
                   //recebe pedido de end se nao saiu
                   if(!quitted){
-                      System.out.println(this.clients.loggedIn.get(port)+" : "+this.challengeInfo.getUserChallenge(challengeMorA).getPoints(port));
+                      
+                      try {
+                          packet = new DatagramPacket(new byte[1024], 1024);
+                          socket.receive(packet);
+                          PDU endRequest = PDU.fromBytes(packet.getData());
+                          
+                          challengeInfo.getUserChallenge(challengeMorA).finish();
+                          
+                          while(!challengeInfo.getUserChallenge(challengeMorA).allfinished()){
+                              challengeInfo.getUserChallenge(challengeMorA).wait();
+                          }
+                          
+                          String scores = "Andre : 10 pts";
+                          PDU endReply  = REPLY_Builder.REPLY_SCOREALL(endRequest.getLabel(),scores );
+                          data = PDU.toBytes(endReply);
+                          packet = new DatagramPacket(data,data.length);
+                          socket.send(packet);
+                          
+                          System.out.println(this.clients.loggedIn.get(port)+" : "+this.challengeInfo.getUserChallenge(challengeMorA).getPoints(port));
+                      } catch (IOException ex) {
+                          Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                      } catch (InterruptedException ex) {
+                          Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                      }
                   }
                   //
                   challengeMorA = null;
