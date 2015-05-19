@@ -97,7 +97,7 @@ public class UserChallenge {
     }
     
     synchronized public boolean allfinished(){
-        return (nUsers<=usersfinished);
+        return (usersfinished>=nUsers);
     }
 
 }

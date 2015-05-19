@@ -126,7 +126,7 @@ public class ClientHandler extends Thread{
                       
 
                       try {
-                          socket.setSoTimeout(120000);
+                          
                           PDU question = REPLY_Builder.REPLY_QUESTION(0,questions.get(i).question, i, questions.get(i).answers);
                           data = PDU.toBytes(question);
                           packet = new DatagramPacket(data, data.length);
@@ -150,6 +150,7 @@ public class ClientHandler extends Thread{
                           boolean confirmed = false;
                           while(!confirmed){
                               packet = new DatagramPacket(new byte[1024], 1024);
+                              socket.setSoTimeout(2500);
                               socket.receive(packet);
                               PDU qConfirm = PDU.fromBytes(packet.getData());
                               if(qConfirm.getType()==0){
@@ -180,6 +181,7 @@ public class ClientHandler extends Thread{
                           confirmed = false;
                           while(!confirmed){
                               packet = new DatagramPacket(new byte[1024], 1024);
+                              socket.setSoTimeout(2500);
                               socket.receive(packet);
                               PDU qConfirm = PDU.fromBytes(packet.getData());
                               if(qConfirm.getType()==0){
@@ -196,6 +198,7 @@ public class ClientHandler extends Thread{
                           }
                           //musica enviada
                           packet = new DatagramPacket(new byte[1024],1024);
+                          socket.setSoTimeout(65000);
                           socket.receive(packet);
                           
                           PDU answer = PDU.fromBytes(packet.getData());
@@ -236,21 +239,27 @@ public class ClientHandler extends Thread{
                       
                       try {
                           packet = new DatagramPacket(new byte[1024], 1024);
+                          socket.setSoTimeout(2500);
                           socket.receive(packet);
                           PDU endRequest = PDU.fromBytes(packet.getData());
                           
                           challengeInfo.getUserChallenge(challengeMorA).finish();
                           
-                          while(!challengeInfo.getUserChallenge(challengeMorA).allfinished()){
-                              challengeInfo.getUserChallenge(challengeMorA).wait();
-                          }
+                          UserChallenge uch = challengeInfo.getUserChallenge(challengeMorA);
+                        
+                                System.out.print("Waiting");
+                                while(!uch.allfinished()){
+                                   sleep(100);
+                                   System.out.print(".");
+                                }
+                          
                           
                           String scores = "Andre : 10 pts";
                           PDU endReply  = REPLY_Builder.REPLY_SCOREALL(endRequest.getLabel(),scores );
                           data = PDU.toBytes(endReply);
                           packet = new DatagramPacket(data,data.length);
                           socket.send(packet);
-                          
+                           socket.setSoTimeout(0);
                           System.out.println(this.clients.loggedIn.get(port)+" : "+this.challengeInfo.getUserChallenge(challengeMorA).getPoints(port));
                       } catch (IOException ex) {
                           Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -260,6 +269,7 @@ public class ClientHandler extends Thread{
                   }
                   //
                   challengeMorA = null;
+                 
               }
                 
             }
