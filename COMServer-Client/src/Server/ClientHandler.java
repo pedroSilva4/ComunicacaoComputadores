@@ -233,7 +233,7 @@ public class ClientHandler extends Thread{
                                    
                                }else{
                                     this.clients.addPoints(clients.loggedIn.get(port), -1);
-                                    this.challengeInfo.getUserChallenge(challengeMorA).incPoints(port, 2);
+                                    this.challengeInfo.getUserChallenge(challengeMorA).incPoints(port, -1);
                                }
                               //responde ao pedido
                              
