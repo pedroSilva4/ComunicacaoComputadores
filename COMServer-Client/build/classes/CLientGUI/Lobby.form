@@ -98,6 +98,7 @@
             </Property>
           </Properties>
           <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="list_challengesFocusLost"/>
             <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="list_challengesValueChanged"/>
           </Events>
         </Component>
@@ -200,6 +201,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Remove "/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bt_removeChallengeActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

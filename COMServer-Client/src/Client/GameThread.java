@@ -84,6 +84,11 @@ public class GameThread extends Thread implements Observer{
                          PDU question = PDU.fromBytes(packet.getData());
 
                          byte[][] data = question.getData();
+                         if(data[21]!=null){
+                             new ErrorWindow("Challenge Cancelado", new String(data[21]), time, new JFrame()).wshow();
+                             b.enableButtons();
+                             return;
+                         }
                          String qt = new String(data[11]);
                          System.out.println(qt);
                          String[] answers = new String(data[12]).split(";");
@@ -235,14 +240,14 @@ public class GameThread extends Thread implements Observer{
                     }
                     challengeQueued = false;
                     System.out.println("desafio terminado");
-                    new ErrorWindow("Jogo Terminado","Pontos Obtidos :"+accPoints+"\nTotal Pontos: "+user.points, "message", new JFrame()).wshow();
+                    
                  
                     if(!quitted){
                     PDU end = PDU_Builder.END_PDU(label);
                     byte[] data = PDU.toBytes(end);
                     DatagramPacket packet = new DatagramPacket(data, data.length);
                     socket.send(packet);
-                    
+                    new ErrorWindow("Jogo Terminado","Pontos Obtidos :"+accPoints+"\nTotal Pontos: "+user.points, "message", new JFrame()).wshow();
                     //show waiting on other players!
                     
                     packet = new DatagramPacket(new byte[2048], 2048);
@@ -254,7 +259,9 @@ public class GameThread extends Thread implements Observer{
                      new ErrorWindow("Jogo Terminado",new String(end.getData()[20]), "message", new JFrame()).wshow();
                     
                     }
-                    
+                    else{
+                      new ErrorWindow("Jogo Terminado","Pontos Obtidos :"+accPoints+"\nTotal Pontos: "+user.points, "message", new JFrame()).wshow();
+                    }
                     b.enableButtons();
                 }
                 else{

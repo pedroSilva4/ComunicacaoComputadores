@@ -5,10 +5,18 @@
  */
 package Common;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -24,6 +32,7 @@ public class UserChallenge {
     private int nUsers = 0; 
     private int usersfinished = 0;
     private final int maker;
+    private boolean canceled  =false;
 
     synchronized public String getTime(){
         return this.time;
@@ -104,5 +113,31 @@ public class UserChallenge {
     
     synchronized public Collection<User> getRanking(){
         return this.usersPlaying.values();
+    }
+
+    public boolean checkDate() {
+        try {
+            Calendar cal = new GregorianCalendar();
+            DateFormat datef = new SimpleDateFormat("yyMMddHHmmss");
+            String finaltime = this.getData()+this.getTime();
+            cal.setTime(datef.parse(finaltime));
+            Calendar cal2 = Calendar.getInstance();
+            if(cal.getTimeInMillis() - cal2.getTimeInMillis() > 0 ){
+                return true;
+            }
+            
+        } catch (ParseException ex) {
+            Logger.getLogger(UserChallenge.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return false;
+    }
+
+    public void cancelCh() {
+       this.canceled = true;
+    }
+    
+    public boolean isCanceled(){
+        return this.canceled;
     }
 }

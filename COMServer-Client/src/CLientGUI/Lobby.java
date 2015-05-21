@@ -64,9 +64,11 @@ public class Lobby extends javax.swing.JFrame implements Observer{
          DefaultListModel<String> model = new DefaultListModel<>();
          
          for(String s:strs){
-             String parsed = parser(s);
-             model.addElement(parsed);
-             this.activeChallenges.put(s, parsed);
+             if(s!=null){
+                String parsed = parser(s);
+                model.addElement(parsed);
+                this.activeChallenges.put(s, parsed);
+             }
          }
          
         this.list_challenges.setModel(model);
@@ -107,6 +109,11 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             String[] strings = { "Joguinho - 21h:10m:45s do dia 10 de Março de 2015", "Jogatina - 21h:15m:00s do dia 10 de Março de 2015" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
+        });
+        list_challenges.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                list_challengesFocusLost(evt);
+            }
         });
         list_challenges.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -174,6 +181,11 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         });
 
         bt_removeChallenge.setText("Remove ");
+        bt_removeChallenge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_removeChallengeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -224,12 +236,17 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private boolean challengeMadeOrAccepted = false;
     private void bt_makeChallengeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_makeChallengeActionPerformed
         // TODO add your handling code here:
         buttonBlocktrigger b = new buttonBlocktrigger();
         b.addObserver(this);
         this.gt = new GameThread(socket,b,this.user);
         new MakeChallenge(this, true,socket,label,this.gt).setVisible(true);
+        
+        this.bt_makeChallenge.setEnabled(false);
+        this.bt_acceptChallenge.setEnabled(false);
+        challengeMadeOrAccepted = true;
     }//GEN-LAST:event_bt_makeChallengeActionPerformed
 
     private void button_list_challengesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_list_challengesActionPerformed
@@ -248,8 +265,10 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             ArrayList<String> strs = new ArrayList<>();
             if(chs!=null){
                 for(byte[] b: chs){
-                    String ch = new String(b);
-                    strs.add(ch);
+                    if(b!=null){
+                        String ch = new String(b);
+                        strs.add(ch);
+                    }
                 }
             }
             
@@ -258,9 +277,11 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             DefaultListModel<String> model = new DefaultListModel<>();
          
             for(String s:strs){
-                String parsed = parser(s);
-                model.addElement(parsed);
-                this.activeChallenges.put(s, parsed); 
+                if(s!=null){
+                    String parsed = parser(s);
+                    model.addElement(parsed);
+                    this.activeChallenges.put(s, parsed); 
+                }
             }
          
             this.list_challenges.setModel(model);
@@ -272,8 +293,11 @@ public class Lobby extends javax.swing.JFrame implements Observer{
 
     private void list_challengesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_list_challengesValueChanged
         // TODO add your handling code here:
-        bt_acceptChallenge.setEnabled(true);
-        bt_removeChallenge.setEnabled(true);
+        if(!challengeMadeOrAccepted){
+             bt_acceptChallenge.setEnabled(true);
+        }else{
+            bt_removeChallenge.setEnabled(true);
+        }
     }//GEN-LAST:event_list_challengesValueChanged
 
     private void bt_acceptChallengeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_acceptChallengeActionPerformed
@@ -310,6 +334,53 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_bt_acceptChallengeActionPerformed
+
+    private void list_challengesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_list_challengesFocusLost
+ 
+    }//GEN-LAST:event_list_challengesFocusLost
+
+    private void bt_removeChallengeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_removeChallengeActionPerformed
+        // TODO add your handling code here:
+       
+         int i = this.list_challenges.getSelectedIndex();
+         if(i>-1){
+            try {
+                String s = (String)this.list_challenges.getSelectedValue();
+                System.out.println(s);
+                for(String st : activeChallenges.keySet())
+                {
+                    if(activeChallenges.get(st).equals(s)){
+                        System.out.println(st.split(",")[0]);
+                        s=st.split(",")[0];
+                    }
+                    
+                }  
+                
+                PDU removeCh = PDU_Builder.DELETE_CHALLENGE(label, s);
+                label++;
+                byte[] b =PDU.toBytes(removeCh);
+                DatagramPacket packet= new DatagramPacket(b, b.length);
+                socket.send(packet);
+    
+                packet  =new DatagramPacket(new byte[1024], 1024);
+                socket.receive(packet);
+                
+                removeCh = PDU.fromBytes(packet.getData());
+                if(removeCh.getData()[21]!=null){
+                    new ErrorWindow("Challenge",new String(removeCh.getData()[21]),"error",this).wshow();
+                }else{
+                    this.gt.challengeQueued = false;
+                    new ErrorWindow("Challenge","Challenge Removido com Sucesso","message",this).wshow();
+                }
+                
+                
+            } catch (IOException ex) {
+                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
+        }
+    }//GEN-LAST:event_bt_removeChallengeActionPerformed
 
         private String parser(String date){
             
@@ -418,17 +489,60 @@ public class Lobby extends javax.swing.JFrame implements Observer{
     @Override
     public void update(Observable o, Object arg) {
         boolean b = (boolean)arg;
-        this.bt_acceptChallenge.setEnabled(b);
+       // this.bt_acceptChallenge.setEnabled(b);
         this.bt_makeChallenge.setEnabled(b);
-        this.bt_removeChallenge.setEnabled(b);
+        //this.bt_removeChallenge.setEnabled(b);
         this.button_list_challenges.setEnabled(b);
         this.setVisible(b);
         //aparece timer para as perguntas!!!!
         //era nice
+        
             //faz update dos pontos
             this.label_userInfo_nome.setText(this.user.username);
             this.label_userInfo_score.setText(""+this.user.points);
-        
+            
+            challengeMadeOrAccepted = !b;
+       
+            if(b){
+            try {
+                PDU requestPDU = PDU_Builder.LIST_CHALLENGES(label);
+                label++;
+                byte[] data = PDU.toBytes(requestPDU);
+                DatagramPacket packet = new DatagramPacket(data, data.length);
+                socket.send(packet);
+                packet = new DatagramPacket(new byte[1024], 1024);
+                socket.receive(packet);
+                PDU reply = PDU.fromBytes(packet.getData());
+                byte[][] chs = reply.getData();
+                this.activeChallenges = new HashMap<>();
+                ArrayList<String> strs = new ArrayList<>();
+                if(chs!=null){
+                    
+                    for(byte[] bs: chs){
+                        if(bs!=null){
+                            String ch = new String(bs);
+                            strs.add(ch);
+                        }
+                    }
+                }
+
+                //parser
+
+                DefaultListModel<String> model = new DefaultListModel<>();
+
+                for(String s:strs){
+                    if(s!=null){
+                        String parsed = parser(s);
+                        model.addElement(parsed);
+                        this.activeChallenges.put(s, parsed); 
+                    }
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            }
+            
     }
     
     

@@ -73,8 +73,11 @@ public class ChallengesInfo {
        int i = 0;
        for(String ug: this.challenges.keySet())
        {
-           res[i] = (ug+","+challenges.get(ug).data+","+challenges.get(ug).getTime()+","+challenges.get(ug).getChType().n_questions).getBytes();
-           i++;
+           
+           if(this.challenges.get(ug).checkDate()){
+                res[i] = (ug+","+challenges.get(ug).data+","+challenges.get(ug).getTime()+","+challenges.get(ug).getChType().n_questions).getBytes();
+                i++;
+           }
        }
        return res;
     }

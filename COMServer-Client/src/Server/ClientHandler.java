@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -81,6 +82,8 @@ public class ClientHandler extends Thread{
                     try{
                         if(challengeMorA!=null)
                              socket.setSoTimeout(5000);
+                        else 
+                             socket.setSoTimeout(0);
                         
                         socket.receive( request );
 
@@ -124,11 +127,19 @@ public class ClientHandler extends Thread{
                   Map<Integer,Question> questions = ch.getQuestions();
                   
                   boolean quitted =false;
-                  for(int i: questions.keySet()){
-                      
-
-                      try {
+                  try {
+                      if(this.challengeInfo.getUserChallenge(challengeMorA).isCanceled() || !this.challengeInfo.getUserChallenge(challengeMorA).isGameReady())
+                      {
+                          PDU erro = REPLY_Builder.REPLY_ERRO(0,"Erro : Challenge Cancelado!");
+                          data = PDU.toBytes(erro);
+                          packet = new DatagramPacket(data, data.length);
+                          socket.send(packet);
+                          quitted = true;
                           
+                      }
+                      else{
+                      for(int i: questions.keySet()){
+                  
                           PDU question = REPLY_Builder.REPLY_QUESTION(0,questions.get(i).question, i, questions.get(i).answers);
                           data = PDU.toBytes(question);
                           packet = new DatagramPacket(data, data.length);
@@ -231,11 +242,14 @@ public class ClientHandler extends Thread{
                                socket.send(packet);
                                
                               //depois passa para a proxima pergunta.
-                          }} catch (IOException | InterruptedException ex) {
-                          System.out.println("ClientHandler -> "+ex.getMessage());
+                            }
+                        } 
                       }
-                     
-                  }
+                  }catch (IOException | InterruptedException ex) {
+                          System.out.println("ClientHandler -> "+ex.getMessage());
+                          this.challengeInfo.challenges.get(challengeMorA).userLoggedOut(port);
+                          
+                      }
                   //recebe pedido de end se nao saiu
                   if(!quitted){
                       
@@ -256,7 +270,7 @@ public class ClientHandler extends Thread{
                                 }
                           
                           
-                          ArrayList<User> usersRankingByport = (ArrayList<User>) uch.getRanking();
+                          Collection<User> usersRankingByport = uch.getRanking();
                           
                           String scores = "";
                           
@@ -269,6 +283,7 @@ public class ClientHandler extends Thread{
                           packet = new DatagramPacket(data,data.length);
                           socket.send(packet);
                            socket.setSoTimeout(0);
+                           
                           System.out.println(this.clients.loggedIn.get(port)+" : "+this.challengeInfo.getUserChallenge(challengeMorA).getPoints(port));
                       } catch (IOException ex) {
                           Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -398,8 +413,24 @@ public class ClientHandler extends Thread{
                 }
                 case 10:{//delele challenge - (nome do desafio) - ou apaga o que é destinado, e o que fez.
                     
+                    byte[][] fields = requestPDU.getData();
                     
-                    return null;
+                    String name = new String(fields[0]);
+                    
+                    if(challengeMorA!=null){
+                        UserChallenge uch = this.challengeInfo.getUserChallenge(name);
+                        if(uch!=null){
+                            if(uch.maker()==port){
+                                challengeMorA=null;
+                                uch.cancelCh();
+                                return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
+                            }
+                        }
+                    }
+                   
+                    return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "Nao pode remover o Challenge com nome "+ name);
+                   
+     
                 }
                 case 13:{//list ranking - (sem parametros) - 
                     

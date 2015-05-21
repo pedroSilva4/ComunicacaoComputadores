@@ -218,8 +218,10 @@ public class Register_Login extends javax.swing.JFrame {
                              ArrayList<String> strs = new ArrayList<>(); 
                              if(chs!=null){
                                 for(byte[] b: chs){
+                                    if(b!=null){
                                     String ch = new String(b);
                                     strs.add(ch);
+                                    }
                                 }
                              }
                             

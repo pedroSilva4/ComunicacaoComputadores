@@ -92,7 +92,7 @@ public final class PDU_Builder {
         byte[][] data = new byte[1][];
         data[0] = challenge.getBytes();
         size += data[0].length;
-        return new PDU(0.0f,0,10,label,1,size,data,0);
+        return new PDU(0.0f,0, 10,label,1,size,data,0);
     }
     
     static public PDU ANSWER(int label,int choice,String challenge,int question){
