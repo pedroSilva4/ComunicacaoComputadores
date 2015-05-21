@@ -5,7 +5,9 @@
  */
 package Common;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -99,5 +101,8 @@ public class UserChallenge {
     synchronized public boolean allfinished(){
         return (usersfinished>=nUsers);
     }
-
+    
+    synchronized public Collection<User> getRanking(){
+        return this.usersPlaying.values();
+    }
 }

@@ -263,6 +263,16 @@ public class GameThread extends Thread implements Observer{
          }
         } catch (ParseException | InterruptedException | IOException ex) {
             Logger.getLogger(GameThread.class.getName()).log(Level.SEVERE, null, ex);
+            PDU quit_pdu = PDU_Builder.QUIT_PDU(label);
+            byte[] d = PDU.toBytes(quit_pdu);
+            DatagramPacket packet = new DatagramPacket(d, d.length);
+            try {
+                socket.send(packet);
+            } catch (IOException ex1) {
+                Logger.getLogger(GameThread.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+              new ErrorWindow("Jogo Terminado","Ocurreu um erro ao inicializar o jogo!", "message", new JFrame()).wshow();
+             b.enableButtons();
         }
        
     }

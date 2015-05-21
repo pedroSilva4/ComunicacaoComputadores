@@ -10,6 +10,7 @@ import Common.UserChallenge;
 import Common.ChallengeType;
 import Common.PDU;
 import Common.Question;
+import Common.User;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -19,6 +20,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -254,7 +256,14 @@ public class ClientHandler extends Thread{
                                 }
                           
                           
-                          String scores = "Andre : 10 pts";
+                          ArrayList<User> usersRankingByport = (ArrayList<User>) uch.getRanking();
+                          
+                          String scores = "";
+                          
+                          for(User u : usersRankingByport){
+                              scores+=this.clients.loggedIn.get(u.port)+" : "+u.points+"\n";
+                          }
+                          
                           PDU endReply  = REPLY_Builder.REPLY_SCOREALL(endRequest.getLabel(),scores );
                           data = PDU.toBytes(endReply);
                           packet = new DatagramPacket(data,data.length);
@@ -417,7 +426,7 @@ public class ClientHandler extends Thread{
                 String finaltime = ch.getData()+ch.getTime();
                 cal.setTime(datef.parse(finaltime));
                 Calendar cal2 = Calendar.getInstance();
-                if(cal.getTimeInMillis() - cal2.getTimeInMillis() < 2500){
+                if(cal.getTimeInMillis() - cal2.getTimeInMillis() < 1000){
                     return true;
                 }
             } catch (ParseException ex) {
