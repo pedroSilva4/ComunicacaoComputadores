@@ -1,4 +1,0 @@
-CLientGUI.Task
-CLientGUI.ProgressListener
-CLientGUI.LoadChallengeProgressBar
-CLientGUI.ProgressCircleUI

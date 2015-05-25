@@ -1,2 +1,7 @@
 *.class
 /COMServer-Client/dist/
+/Server/nbproject/private/
+/Server/build/
+/Server/dist/
+/Client/nbproject/private/
+/Client/build/
