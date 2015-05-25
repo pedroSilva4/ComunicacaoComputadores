@@ -91,14 +91,14 @@ public class REPLY_Builder {
         }
         data[12] =answers_s.getBytes();
         size+=data[12].length;
-        return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
+        return new PDU(0.0f, 0, 0,label, 3, size, data, 0);
     }
    
     static public PDU REPLY_NUMBERANSWER(int label, int number){
         int size = 0;
         byte data[][] = new byte[22][];
-        data[12] = String.valueOf(number).getBytes();
-        size += data[12].length;
+        data[10] = String.valueOf(number).getBytes();
+        size += data[10].length;
         return new PDU(0.0f, 0, 0,label, 1, size, data, 0);
     }
     
