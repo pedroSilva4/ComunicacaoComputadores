@@ -37,24 +37,34 @@ public class Server {
     private static  int threadPort;
     
     public static void main(String[] args) throws SocketException, IOException, InterruptedException {
-        // TODO code application logic here
-        Permission p = new SocketPermission("localhost:4999-","connect,accept,listen");
-        
-        threadPort = 5001;
-        Clients clients = new Clients();
-        ChallengesInfo challengesInfo = new ChallengesInfo();
-     /** 
         try {
-          ServerConnectionHandler severHandler = new ServerConnectionHandler(args);
-        } catch (WrongArgumentException ex) {
-            System.err.println("Wrong arguments!");
-            return;
+            // TODO code application logic here
+            Permission p = new SocketPermission("localhost:4999-","connect,accept,listen");
             
+            threadPort = 5001;
+            Clients clients = new Clients();
+            ChallengesInfo challengesInfo = new ChallengesInfo();
+            
+            ServerConnectionHandler TCP_init = new ServerConnectionHandler(args);
+            if(TCP_init.SlaveSocket!=null)
+            {
+                    //criar uma thread que de para enviar dados via tcp;
+                   
+            }   
+            
+            ///criar nova thread que recebe pedidos tcp;
+            ServerSocketThread sst =  new ServerSocketThread(TCP_init.MasterSocket, clients, challengesInfo);
+            sst.start();
+                   
+                    
+            
+            ServerHelloHandler helloHandler = new ServerHelloHandler(clients,challengesInfo);
+            helloHandler.start();
+            helloHandler.join();
+            
+        } catch (WrongArgumentException ex) {
+           System.err.println("Wrong Arguments -> args : <myport> or <myport> <ip> <serverport>");
         }
-        **/
-       ServerHelloHandler helloHandler = new ServerHelloHandler(clients,challengesInfo);
-       helloHandler.start();
-       helloHandler.join();
         
     }
     
@@ -102,37 +112,7 @@ public class Server {
     }
     
     
-    static class ServerConnectionHandler{
-        
-        private ServerSocket socketMaster;
-        private Socket socketSlave;
-        public ServerConnectionHandler(String[] args) throws WrongArgumentException{
-       try{
-            switch(args[0]){
-                case "-master":{
-                    socketMaster  = new ServerSocket(50000);
-                    //runnable que recebe pedidos de slaves
-                    break;
-                }
-                case "-slave":{
-                    String ip = args[1];
-                    socketSlave = new Socket(ip,50000);
-                    break;
-                }
-                default: throw new WrongArgumentException();
-            }
-        }catch(IOException e){
-            System.out.println("Ocorreu um erro a inicializar o servidor");
-        }catch(ArrayIndexOutOfBoundsException e){
-            throw new WrongArgumentException();
-        }
-       
-       
-        
-        }
-    }
-
-    private static class WrongArgumentException extends Exception {
+    static class WrongArgumentException extends Exception {
 
         public WrongArgumentException() {
         }
