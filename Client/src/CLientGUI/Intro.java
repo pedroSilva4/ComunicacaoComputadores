@@ -45,6 +45,7 @@ public class Intro extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         port = new javax.swing.JTextField();
+        jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -57,7 +58,7 @@ public class Intro extends javax.swing.JFrame {
                 jTextField1ActionPerformed(evt);
             }
         });
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(94, 171, 252, 44));
+        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 120, 252, 44));
 
         jButton1.setText("Connect");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -65,20 +66,20 @@ public class Intro extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 230, 96, 39));
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 180, 96, 39));
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("The Music Questions Game");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 33, 358, 43));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 358, 43));
 
         jLabel2.setFont(new java.awt.Font("Noto Sans", 0, 14)); // NOI18N
         jLabel2.setText("Server : ");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 170, 64, 44));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 64, 44));
 
         jLabel3.setFont(new java.awt.Font("Noto Sans", 0, 14)); // NOI18N
         jLabel3.setText("My Port : ");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 106, -1, -1));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, -1, 20));
 
         port.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         port.setText("4444");
@@ -87,7 +88,8 @@ public class Intro extends javax.swing.JFrame {
                 portActionPerformed(evt);
             }
         });
-        getContentPane().add(port, new org.netbeans.lib.awtextra.AbsoluteConstraints(94, 94, 252, 45));
+        getContentPane().add(port, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 60, 252, 45));
+        getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 360, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -182,6 +184,7 @@ public class Intro extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField port;
     // End of variables declaration//GEN-END:variables

@@ -149,7 +149,7 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
         imageContainer.setLayout(new java.awt.CardLayout());
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel1.setText("Pergunta :");
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/FAQ-icon.png"))); // NOI18N
 
         question.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         question.setText("exemplo de pergunta ? ");
@@ -170,9 +170,9 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(192, 192, 192)
+                        .addGap(149, 149, 149)
                         .addComponent(jLabel1)
-                        .addGap(6, 6, 6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(question))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
@@ -199,9 +199,9 @@ public class QuestionGUI extends javax.swing.JFrame implements Observer{
             .addGroup(layout.createSequentialGroup()
                 .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(question))
-                .addGap(15, 15, 15)
+                    .addComponent(question)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(imageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()

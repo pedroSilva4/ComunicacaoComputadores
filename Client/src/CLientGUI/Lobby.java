@@ -98,6 +98,7 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         ui_score = new javax.swing.JLabel();
         label_userInfo_nome = new javax.swing.JLabel();
         label_userInfo_score = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         bt_acceptChallenge = new javax.swing.JButton();
         bt_makeChallenge = new javax.swing.JButton();
         bt_removeChallenge = new javax.swing.JButton();
@@ -122,9 +123,10 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         });
         jScrollPane2.setViewportView(list_challenges);
 
+        label_listChallenges.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         label_listChallenges.setText("Challenges:");
 
-        button_list_challenges.setText("R");
+        button_list_challenges.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/Refresh-icon-3.png"))); // NOI18N
         button_list_challenges.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button_list_challengesActionPerformed(evt);
@@ -133,23 +135,27 @@ public class Lobby extends javax.swing.JFrame implements Observer{
 
         panel_user_info.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "User Info:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 13))); // NOI18N
 
-        ui_nome.setText("Nome:");
+        ui_nome.setText("Name:");
 
         ui_score.setText("Score:");
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/user_info.png"))); // NOI18N
 
         javax.swing.GroupLayout panel_user_infoLayout = new javax.swing.GroupLayout(panel_user_info);
         panel_user_info.setLayout(panel_user_infoLayout);
         panel_user_infoLayout.setHorizontalGroup(
             panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_user_infoLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(2, 2, 2)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(ui_nome)
                     .addComponent(ui_score))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(label_userInfo_nome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(label_userInfo_score, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(label_userInfo_score, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(label_userInfo_nome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panel_user_infoLayout.setVerticalGroup(
@@ -157,22 +163,29 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             .addGroup(panel_user_infoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ui_nome)
-                    .addComponent(label_userInfo_nome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ui_score)
-                    .addComponent(label_userInfo_score, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panel_user_infoLayout.createSequentialGroup()
+                        .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(ui_nome)
+                            .addComponent(label_userInfo_nome, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(ui_score)
+                            .addComponent(label_userInfo_score, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 9, Short.MAX_VALUE)))
+                .addContainerGap())
         );
 
-        bt_acceptChallenge.setText("Accept ");
+        bt_acceptChallenge.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/Check-icon.png"))); // NOI18N
+        bt_acceptChallenge.setText(" Accept ");
         bt_acceptChallenge.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bt_acceptChallengeActionPerformed(evt);
             }
         });
 
+        bt_makeChallenge.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
+        bt_makeChallenge.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/math-add-icon.png"))); // NOI18N
         bt_makeChallenge.setText("Make Challenge");
         bt_makeChallenge.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -180,7 +193,8 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             }
         });
 
-        bt_removeChallenge.setText("Remove ");
+        bt_removeChallenge.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/delete-icon.png"))); // NOI18N
+        bt_removeChallenge.setText(" Remove ");
         bt_removeChallenge.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bt_removeChallengeActionPerformed(evt);
@@ -193,44 +207,45 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(bt_makeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(bt_acceptChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(bt_removeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(41, 41, 41)
-                        .addComponent(panel_user_info, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(label_listChallenges)
-                        .addGap(360, 360, 360)
-                        .addComponent(button_list_challenges, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 481, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(63, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(button_list_challenges))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 481, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(bt_makeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(bt_acceptChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(bt_removeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(18, 18, 18)
+                                .addComponent(panel_user_info, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(14, 14, 14))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(bt_makeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(6, 6, 6)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(bt_acceptChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(bt_removeChallenge, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(panel_user_info, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(50, 50, 50)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(5, 5, 5)
-                        .addComponent(label_listChallenges))
+                    .addComponent(panel_user_info, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(35, 35, 35)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(label_listChallenges)
                     .addComponent(button_list_challenges))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         pack();
@@ -462,6 +477,7 @@ public class Lobby extends javax.swing.JFrame implements Observer{
     private javax.swing.JButton bt_makeChallenge;
     private javax.swing.JButton bt_removeChallenge;
     private javax.swing.JButton button_list_challenges;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel label_listChallenges;
     private javax.swing.JLabel label_userInfo_nome;
