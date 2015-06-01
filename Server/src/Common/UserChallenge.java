@@ -122,7 +122,7 @@ public class UserChallenge {
             String finaltime = this.getData()+this.getTime();
             cal.setTime(datef.parse(finaltime));
             Calendar cal2 = Calendar.getInstance();
-            if(cal.getTimeInMillis() - cal2.getTimeInMillis() > 0 ){
+            if(cal.getTimeInMillis() - cal2.getTimeInMillis() > 0  && !this.isCanceled()){
                 return true;
             }
             

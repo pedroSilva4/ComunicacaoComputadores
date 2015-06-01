@@ -7,7 +7,6 @@ package Server;
 
 import Common.PDU;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -57,7 +56,7 @@ class ServerHandler extends Thread{
                     PDU request = PDU.fromBytes(finaldata);
                     
                     //parser;
-                    PDU reply = null;
+                    PDU reply = parseAndDoWhateveryouDO(request);
                     
                     //responder
                     data = PDU.toBytes(reply);
@@ -92,7 +91,7 @@ class ServerHandler extends Thread{
         
        public void run(){
            for(Socket s : sockets){
-                   if(!s.equals(sc)){
+                   if(sc==null || !s.equals(sc)){
                        try {
                            
                            OutputStream out = s.getOutputStream();
@@ -108,5 +107,13 @@ class ServerHandler extends Thread{
                     } 
            }
         }
+    }
+    
+    
+    private PDU parseAndDoWhateveryouDO(PDU request){
+        
+        
+        
+        return null;
     }
 }
