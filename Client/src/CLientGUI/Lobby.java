@@ -139,6 +139,8 @@ public class Lobby extends javax.swing.JFrame implements Observer{
 
         ui_score.setText("Score:");
 
+        label_userInfo_nome.setText("test");
+
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/user_info.png"))); // NOI18N
 
         javax.swing.GroupLayout panel_user_infoLayout = new javax.swing.GroupLayout(panel_user_info);
@@ -163,16 +165,17 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             .addGroup(panel_user_infoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
                     .addGroup(panel_user_infoLayout.createSequentialGroup()
-                        .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(ui_nome)
-                            .addComponent(label_userInfo_nome, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                            .addComponent(label_userInfo_nome, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(ui_score)
                             .addComponent(label_userInfo_score, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 9, Short.MAX_VALUE)))
+                        .addGap(0, 16, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -245,7 +248,7 @@ public class Lobby extends javax.swing.JFrame implements Observer{
                     .addComponent(button_list_challenges))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pack();
