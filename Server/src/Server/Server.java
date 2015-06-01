@@ -37,7 +37,7 @@ public class Server {
     private static  int threadPort;
     
     public static void main(String[] args) throws SocketException, IOException, InterruptedException {
-        //try {
+        try {
             // TODO code application logic here
             Permission p = new SocketPermission("localhost:4999-","connect,accept,listen");
             
@@ -45,7 +45,7 @@ public class Server {
             Clients clients = new Clients();
             ChallengesInfo challengesInfo = new ChallengesInfo();
             
-         /*   ServerConnectionHandler TCP_init = new ServerConnectionHandler(args);
+            ServerConnectionHandler TCP_init = new ServerConnectionHandler(args);
             if(TCP_init.SlaveSocket!=null)
             {
                     //criar uma thread que de para enviar dados via tcp;
@@ -55,17 +55,17 @@ public class Server {
             ///criar nova thread que recebe pedidos tcp;
             ServerSocketThread sst =  new ServerSocketThread(TCP_init.MasterSocket, clients, challengesInfo);
             sst.start();
-            */       
+                   
                     
             
             ServerHelloHandler helloHandler = new ServerHelloHandler(clients,challengesInfo);
             helloHandler.start();
             helloHandler.join();
-      /*      
+        
         } catch (WrongArgumentException ex) {
            System.err.println("Wrong Arguments -> args : <myport> or <myport> <ip> <serverport>");
         }
-        */
+        
     }
     
     static class ServerHelloHandler extends Thread{
