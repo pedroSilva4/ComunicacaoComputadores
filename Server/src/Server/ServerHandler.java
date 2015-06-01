@@ -5,6 +5,7 @@
  */
 package Server;
 
+import Common.INFO_Builder;
 import Common.PDU;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -31,8 +32,11 @@ class ServerHandler extends Thread{
         this.chs = challengesInfo;
         this.sockets = sockets; 
     }
-    
+   
     public void run(){
+        
+        
+      //   new InformAll(INFO_Builder.INFO_SERVERIP(0,1), sc, sockets).start();
          try {
             
                 InputStream in = sc.getInputStream();
@@ -66,7 +70,7 @@ class ServerHandler extends Thread{
                     
                     
                     //informar todos,isto so acontece em alguns casos como anuncios e etc.
-                    new InformAll(null,sc,sockets).start(); 
+                   // new InformAll(null,sc,sockets).start(); 
                    
                 }
             sc.close();
@@ -112,7 +116,22 @@ class ServerHandler extends Thread{
     
     private PDU parseAndDoWhateveryouDO(PDU request){
         
+        int type =request.getType();
         
+        switch(type){
+            case 1:{
+               
+            }
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            default:
+        }
         
         return null;
     }
