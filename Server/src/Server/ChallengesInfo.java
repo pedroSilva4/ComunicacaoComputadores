@@ -57,6 +57,7 @@ public class ChallengesInfo {
                     try {
                         System.out.println(f.getPath());
                         ChallengeType ch = new ChallengeType(f.getPath());
+                        System.err.println(f.getPath());
                         challenges.put(ch.getName(), ch);
                         System.out.println("Challenge "+ch.getName()+" Carregado");
                     } catch (IOException ex) {
@@ -78,7 +79,7 @@ public class ChallengesInfo {
        {
            
            if(this.challenges.get(ug).checkDate()){
-                res[i] = (ug+","+challenges.get(ug).data+","+challenges.get(ug).getTime()+","+challenges.get(ug).getChType().n_questions).getBytes();
+                res[i] = (ug+","+challenges.get(ug).getData()+","+challenges.get(ug).getTime()+","+challenges.get(ug).getChType().n_questions).getBytes();
                 i++;
            }
        }
@@ -87,5 +88,10 @@ public class ChallengesInfo {
 
     public synchronized UserChallenge getUserChallenge(String name) {
         return this.challenges.get(name);
+    }
+
+    public synchronized void putUserChallenge(UserChallenge us) {
+        this.challenges.put(us.getName(), us);
+        
     }
 }

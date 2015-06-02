@@ -5,10 +5,13 @@
  */
 package Server;
 
+import Common.ClassContainer;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,15 +22,15 @@ import java.util.logging.Logger;
 public class ServerSocketThread extends Thread{
     
     ServerSocket ss;
-    Clients clients;
-    ChallengesInfo challengesInfo;
-    ArrayList<Socket> sockets;
-    public ServerSocketThread(ServerSocket ss, Clients clients,ChallengesInfo challengesInfo){
-    
+    ClassContainer container;
+    Map<Integer,ServerComunication> sockets;
+    int id;
+    public ServerSocketThread(int first_id,ServerSocket ss, ClassContainer container, Map<Integer,ServerComunication> sockets){
+    this.id = first_id;
     this.ss = ss;
-    this.clients = clients;
-    this.challengesInfo = challengesInfo;
-    this.sockets = new ArrayList<>();
+    
+    this.sockets = sockets;
+    this.container = container;
     }
     
     
@@ -39,10 +42,11 @@ public class ServerSocketThread extends Thread{
         while(true){
             try {
                 s =  ss.accept();
-                sockets.add(s);
-                new ServerHandler(clients,challengesInfo,s,sockets).start();
-                
-                
+               
+                ServerComunication coms = new ServerComunication(id,s,container);
+                sockets.put(id, coms );
+                id++;
+                coms.startReceiver();
             } catch (IOException ex) {
                 Logger.getLogger(ServerSocketThread.class.getName()).log(Level.SEVERE, null, ex);
                 try {

@@ -9,7 +9,6 @@ import Common.ChallengeType;
 import Common.User;
 import java.util.HashMap;
 import java.util.Map;
-import sun.text.normalizer.NormalizerImpl;
 
 /**
  *
@@ -32,6 +31,13 @@ public class VirtualChallenges {
         
         boolean isCanceled = false;
         
+        public VirtualChallenge(String serv,String name){
+            this.ipServidor = serv;
+            this.name = name;
+            this.players = new HashMap<>();   
+            
+        }
+        
         public VirtualChallenge(String serv,String name,ChallengeType ch){
             this.ipServidor = serv;
             this.name = name;
@@ -47,8 +53,12 @@ public class VirtualChallenges {
         challenges = new HashMap<>();
     }
     
-    public synchronized void add(ChallengeType type,String ipServidor,String name){
-        VirtualChallenge put = challenges.put(name, new VirtualChallenge(ipServidor, name, type));
+    public synchronized void add(String ipServidor,String name){
+        VirtualChallenge put = challenges.put(name, new VirtualChallenge(ipServidor, name));
+    }
+    
+    public synchronized void addChallengeData(ChallengeType t,String name){
+        this.challenges.get(name).chType=t;
     }
     
     public synchronized void accept(String name,User user){

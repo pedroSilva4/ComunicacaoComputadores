@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,9 +43,13 @@ public class ClientHandler extends Thread{
     Clients clients;
     ChallengesInfo challengeInfo;    
     String challengeMorA = null;
+    VirtualChallenges virtualInfo;
+    HashMap<Integer,ServerComunication> coms;
    
     
-    public ClientHandler(int firstLabel,int port,DatagramPacket packet,Clients clients, ChallengesInfo challengeInfo) throws SocketException{
+    public ClientHandler(int firstLabel,int port,DatagramPacket packet,Clients clients, ChallengesInfo challengeInfo,
+                                                VirtualChallenges virtualinfo,HashMap<Integer,ServerComunication> coms) throws SocketException
+    {
         this.port = port;
         socket = new DatagramSocket(port);
         packetPort = packet.getPort();
@@ -52,6 +57,8 @@ public class ClientHandler extends Thread{
         this.currentLabel = firstLabel;
         this.clients = clients;
         this.challengeInfo=challengeInfo;
+        this.virtualInfo = virtualinfo;
+        this.coms = coms;
     }
     
     public void run(){
@@ -393,6 +400,12 @@ public class ClientHandler extends Thread{
                     if(b){
                       this.challengeMorA = name;
                       int n_questions = this.challengeInfo.getUserChallenge(name).getChType().n_questions;
+                      
+                      new InformAll(coms, INFO_Builder.INFO_REGCHALLENGE(requestPDU.getLabel(),
+                                            this.challengeInfo.getUserChallenge(name)))
+                              .start();
+                      
+                      
                       return REPLY_Builder.REPLY_CHALLENGE(requestPDU.getLabel(), name,date,time,n_questions);
                       
                     }else 
@@ -405,10 +418,11 @@ public class ClientHandler extends Thread{
                      String name = new String(fields[0]);
                         
                      boolean b = this.challengeInfo.accept_challenge(name,port);
-                     this.challengeMorA=name;
+                     
                      
                      if(!b) return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "Desafio não existe, ou ja esta a ser jogado");
-                    
+                     
+                     this.challengeMorA=name;
                      return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
                 }
                 case 10:{//delele challenge - (nome do desafio) - ou apaga o que é destinado, e o que fez.
