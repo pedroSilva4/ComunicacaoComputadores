@@ -5,6 +5,7 @@ import Common.ChallengeType;
 import Common.ClassContainer;
 import Common.PDU;
 import Common.UserChallenge;
+import Server.Clients.Client;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -26,7 +27,9 @@ import java.util.logging.Logger;
  *
  * @author Pedro
  */
+
 class ReceiverThread extends Thread{
+    int extraports = 1;
      Socket sc;
     BufferedReader in; 
     DataInputStream dataIn;
@@ -117,10 +120,25 @@ class ReceiverThread extends Thread{
                 
                
             }
-            case 2:
-            case 3:
-            case 4:
-            case 5:
+            case 2:{
+                String nickname = new String(info.getData()[0]);
+                String name = new String(info.getData()[1]);
+                boolean us = this.container.chinfo.accept_challenge(name,extraports);
+                extraports++;
+            }
+            case 3:{//end challenge
+                
+                String name = new String(info.getData()[0]);
+                
+                this.container.chinfo.getUserChallenge(name).finish();
+            }
+            case 4:{
+                //send user points;
+                //#user ended
+            }
+            case 5:{
+                //
+            }
         }
     }
 }

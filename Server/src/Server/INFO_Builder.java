@@ -43,19 +43,21 @@ public class INFO_Builder {
         return new PDU(0.0f, 0, 1,label, 5, size, data, 0);
     }
     
-    static public PDU INFO_NICKNAME(int label, String nickname){
+    static public PDU INFO_ACCEPTCHALLENGE(int label, String nickname,String name){
         int size = 0;
         byte data[][] = new byte[22][];
-        data[2] = nickname.getBytes();
-        size += data[2].length;
-        return new PDU(0.0f, 0, 2,label, 1, size, data, 0);
+        data[0] = nickname.getBytes();
+        size += data[0].length;
+        data[1] = name.getBytes();
+        size+= data[1].length;
+        return new PDU(0.0f, 0, 2,label, 2, size, data, 0);
     }
     
-    static public PDU INFO_CHALLENGE(int label, String name){
+    static public PDU INFO_FINISHCHALLENGE(int label, String name){
         int size = 0;
         byte data[][] = new byte[22][];
-        data[3] = name.getBytes();
-        size += data[3].length;
+        data[0] = name.getBytes();
+        size += data[0].length;
         return new PDU(0.0f, 0, 3,label, 1, size, data, 0);
     }
     

@@ -9,6 +9,7 @@ import Common.REPLY_Builder;
 import Common.UserChallenge;
 import Common.ChallengeType;
 import Common.PDU;
+import Common.PDU_Builder;
 import Common.Question;
 import Common.User;
 import java.io.IOException;
@@ -268,6 +269,11 @@ public class ClientHandler extends Thread{
                           
                           challengeInfo.getUserChallenge(challengeMorA).finish();
                           
+                          new InformAll(
+                                  coms,
+                                  INFO_Builder.INFO_FINISHCHALLENGE(endRequest.getLabel(), challengeMorA)
+                          ).start();
+                          
                           UserChallenge uch = challengeInfo.getUserChallenge(challengeMorA);
                         
                                 System.out.print("Waiting");
@@ -411,7 +417,7 @@ public class ClientHandler extends Thread{
                     }else 
                       return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "JA existe um Challenge com esse NOme");
                 }
-                case 9:{//acept challenge - (nome do desafio) - nao pode aceitar desafios dele proprio
+                case 9:{//accept challenge - (nome do desafio) - nao pode aceitar desafios dele proprio
                      
                      byte[][] fields= requestPDU.getData();
                     
@@ -421,6 +427,11 @@ public class ClientHandler extends Thread{
                      
                      
                      if(!b) return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "Desafio não existe, ou ja esta a ser jogado");
+                     
+                     new InformAll(
+                             coms,
+                             INFO_Builder.INFO_ACCEPTCHALLENGE(requestPDU.getLabel(), this.clients.loggedIn.get(port), name)
+                            ).start();
                      
                      this.challengeMorA=name;
                      return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
