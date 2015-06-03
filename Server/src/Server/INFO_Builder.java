@@ -16,17 +16,7 @@ import Common.UserChallenge;
 public class INFO_Builder {
     
     static public PDU INFO_REGCHALLENGE(int label, UserChallenge ch){
-        /*
-        private final String name;
-    public String data;
-    private final String time;
-    private final ChallengeType challengeType;
-    private final Map<Integer,User> usersPlaying = new HashMap<>();
-    private int nUsers = 0; 
-    private int usersfinished = 0;
-    private final int maker;
-    private boolean canceled  =false;
-        */
+      
         int size = 0;
         byte data[][] = new byte[22][];
         data[0] = ch.getName().getBytes();
@@ -53,11 +43,15 @@ public class INFO_Builder {
         return new PDU(0.0f, 0, 2,label, 2, size, data, 0);
     }
     
-    static public PDU INFO_FINISHCHALLENGE(int label, String name){
+    static public PDU INFO_FINISHCHALLENGE(int label, String name,String username,String points){
         int size = 0;
         byte data[][] = new byte[22][];
         data[0] = name.getBytes();
         size += data[0].length;
+        data[1] = username.getBytes();
+        size += data[1].length;
+        data[2] = points.getBytes();
+        size+= data[2].length;
         return new PDU(0.0f, 0, 3,label, 1, size, data, 0);
     }
     

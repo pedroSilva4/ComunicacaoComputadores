@@ -116,21 +116,26 @@ class ReceiverThread extends Thread{
                 UserChallenge us = new UserChallenge(name, date, time, type, -1);
                 
                 us.setNusers(nUsers);
-                this.container.chinfo.putUserChallenge(us);
+                us.setShared();
                 
+                this.container.chinfo.putUserChallenge(us);
+                break;
                
             }
-            case 2:{
+            case 2:{//accept
                 String nickname = new String(info.getData()[0]);
                 String name = new String(info.getData()[1]);
                 boolean us = this.container.chinfo.accept_challenge(name,extraports);
                 extraports++;
+                this.container.chinfo.getUserChallenge(name).setShared();
+                break;
             }
             case 3:{//end challenge
-                
                 String name = new String(info.getData()[0]);
-                
-                this.container.chinfo.getUserChallenge(name).finish();
+                String username = new String(info.getData()[1]);
+                int points = Integer.parseInt(new String(info.getData()[2]));
+                this.container.chinfo.getUserChallenge(name).finishSared(username, points);
+                break;
             }
             case 4:{
                 //send user points;

@@ -33,10 +33,25 @@ public class UserChallenge {
     private int usersfinished = 0;
     private final int maker;
     private boolean canceled  =false;
+    private boolean isShared = false;
+    private Map<String,Integer> sharedRanking;
 
     /**
      * @return the name
      */
+    public synchronized boolean isShared(){
+        return this.isShared;
+    }
+    
+    public synchronized Map<String,Integer> getSharedRanking(){
+        return this.sharedRanking;
+    }
+    
+    public synchronized void setShared(){
+        this.sharedRanking = new HashMap<>();
+        this.isShared = true;   
+    }
+    
     synchronized public String getName() {
         return name;
     }
@@ -96,6 +111,13 @@ public class UserChallenge {
         usersfinished=0;
         return true;
     } 
+    
+    
+    synchronized public void finishSared(String username, int points){
+        this.sharedRanking.put(username, points);
+        usersfinished++;
+        this.notifyAll();
+    }
     
     synchronized public void finish(){
         usersfinished++;

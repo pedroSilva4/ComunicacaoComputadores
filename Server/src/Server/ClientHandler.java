@@ -266,13 +266,23 @@ public class ClientHandler extends Thread{
                           socket.setSoTimeout(2500);
                           socket.receive(packet);
                           PDU endRequest = PDU.fromBytes(packet.getData());
+                          if(!challengeInfo.getUserChallenge(challengeMorA).isShared()){
+                              
+                                  challengeInfo.getUserChallenge(challengeMorA).finish();
+                                  
+                          }else{
+                              
+                                String username =  this.clients.loggedIn.get(port);
+                                String points = challengeInfo.getUserChallenge(challengeMorA).getPoints(port);
+                                new InformAll(
+                                        coms,
+                                        INFO_Builder.INFO_FINISHCHALLENGE(endRequest.getLabel(),challengeMorA,username,points)
+                                                
+                                ).start();
+                                
+                                challengeInfo.getUserChallenge(challengeMorA).finishSared(username, Integer.parseInt(points));
                           
-                          challengeInfo.getUserChallenge(challengeMorA).finish();
-                          
-                          new InformAll(
-                                  coms,
-                                  INFO_Builder.INFO_FINISHCHALLENGE(endRequest.getLabel(), challengeMorA)
-                          ).start();
+                          }
                           
                           UserChallenge uch = challengeInfo.getUserChallenge(challengeMorA);
                         
@@ -281,14 +291,23 @@ public class ClientHandler extends Thread{
                                    sleep(100);
                                    System.out.print(".");
                                 }
-                          
-                          
-                          Collection<User> usersRankingByport = uch.getRanking();
-                          
                           String scores = "";
                           
-                          for(User u : usersRankingByport){
-                              scores+=this.clients.loggedIn.get(u.port)+" : "+u.points+"\n";
+                          if(!uch.isShared()){
+                                   Collection<User> usersRankingByport = uch.getRanking();
+                          
+                      
+                                   for(User u : usersRankingByport){
+                                        scores+=this.clients.loggedIn.get(u.port)+" : "+u.points+"\n";
+                                   }
+                          
+                          }
+                          else{
+                              Map<String, Integer> ranking = uch.getSharedRanking();
+                              
+                              for(String s :  ranking.keySet()){
+                                  scores+=s+" : "+ranking.get(s)+"\n";
+                              }
                           }
                           
                           PDU endReply  = REPLY_Builder.REPLY_SCOREALL(endRequest.getLabel(),scores );

@@ -39,6 +39,7 @@ public class Sender extends Thread{
             System.out.println(tosend.length);
             
             synchronized(sc.getOutputStream()){
+                
             this.out.writeInt(tosend.length);
             this.out.write(tosend,0,tosend.length);
             this.out.flush();
