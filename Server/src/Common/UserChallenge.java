@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  */
 public class UserChallenge {
     private final String name;
-    public String data;
+    private final String data;
     private final String time;
     private final ChallengeType challengeType;
     private final Map<Integer,User> usersPlaying = new HashMap<>();
@@ -33,6 +33,28 @@ public class UserChallenge {
     private int usersfinished = 0;
     private final int maker;
     private boolean canceled  =false;
+    private boolean isShared = false;
+    private Map<String,Integer> sharedRanking;
+
+    /**
+     * @return the name
+     */
+    public synchronized boolean isShared(){
+        return this.isShared;
+    }
+    
+    public synchronized Map<String,Integer> getSharedRanking(){
+        return this.sharedRanking;
+    }
+    
+    public synchronized void setShared(){
+        this.sharedRanking = new HashMap<>();
+        this.isShared = true;   
+    }
+    
+    synchronized public String getName() {
+        return name;
+    }
 
     synchronized public String getTime(){
         return this.time;
@@ -45,6 +67,7 @@ public class UserChallenge {
      synchronized public ChallengeType getChType(){
         return this.challengeType;
     }
+    
     
     public UserChallenge(String name, String date, String time, ChallengeType get, int makerPort) {
        this.name = name;
@@ -89,6 +112,13 @@ public class UserChallenge {
         return true;
     } 
     
+    
+    synchronized public void finishSared(String username, int points){
+        this.sharedRanking.put(username, points);
+        usersfinished++;
+        this.notifyAll();
+    }
+    
     synchronized public void finish(){
         usersfinished++;
         this.notifyAll();
@@ -115,7 +145,7 @@ public class UserChallenge {
         return this.usersPlaying.values();
     }
 
-    public boolean checkDate() {
+    synchronized public boolean checkDate() {
         try {
             Calendar cal = new GregorianCalendar();
             DateFormat datef = new SimpleDateFormat("yyMMddHHmmss");
@@ -133,11 +163,19 @@ public class UserChallenge {
         return false;
     }
 
-    public void cancelCh() {
+    synchronized public void cancelCh() {
        this.canceled = true;
     }
     
-    public boolean isCanceled(){
+   synchronized public boolean isCanceled(){
         return this.canceled;
     }
+   
+   synchronized public int getNusers(){
+       return this.nUsers;
+   }
+   
+   synchronized  public void setNusers(int n){
+        nUsers = n;
+   }
 }

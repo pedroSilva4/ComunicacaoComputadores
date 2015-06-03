@@ -1,6 +1,7 @@
 package Server;
 
 
+import Common.ClassContainer;
 import Common.PDU;
 import java.io.File;
 import java.io.FileFilter;
@@ -37,35 +38,43 @@ public class Server {
     private static  int threadPort;
     
     public static void main(String[] args) throws SocketException, IOException, InterruptedException {
-        //try {
+        
+        try {
             // TODO code application logic here
             Permission p = new SocketPermission("localhost:4999-","connect,accept,listen");
             
             threadPort = 5001;
             Clients clients = new Clients();
             ChallengesInfo challengesInfo = new ChallengesInfo();
+            VirtualChallenges virtualInfo = new VirtualChallenges();
+            int id = 0;
+            ClassContainer container = new ClassContainer(clients, challengesInfo, virtualInfo);
+           
+            ServerConnectionHandler tcp_Init = new ServerConnectionHandler(args);
+            HashMap<Integer,ServerComunication> coms = new HashMap<>();
             
-         /*   ServerConnectionHandler TCP_init = new ServerConnectionHandler(args);
-            if(TCP_init.SlaveSocket!=null)
-            {
-                    //criar uma thread que de para enviar dados via tcp;
-                   
-            }   
-            
-            ///criar nova thread que recebe pedidos tcp;
-            ServerSocketThread sst =  new ServerSocketThread(TCP_init.MasterSocket, clients, challengesInfo);
+            if(tcp_Init.SlaveSocket!=null){
+                ServerComunication com = new ServerComunication(id, tcp_Init.SlaveSocket, container);
+                coms.put(id, com);
+                com.startReceiver();
+            }
+   
+            ServerSocketThread sst = new ServerSocketThread(id,tcp_Init.MasterSocket,container,coms);
             sst.start();
-            */       
-                    
             
-            ServerHelloHandler helloHandler = new ServerHelloHandler(clients,challengesInfo);
+            
+            
+            ServerHelloHandler helloHandler = new ServerHelloHandler(clients,challengesInfo,virtualInfo,coms);
             helloHandler.start();
             helloHandler.join();
-      /*      
+            
+            sst.join();
         } catch (WrongArgumentException ex) {
-           System.err.println("Wrong Arguments -> args : <myport> or <myport> <ip> <serverport>");
+            System.err.println("argumentos : <myport> or <myport> <serverIP> <serverPort>");
         }
-        */
+          
+        
+        
     }
     
     static class ServerHelloHandler extends Thread{
@@ -75,12 +84,17 @@ public class Server {
         DatagramSocket socket;
         Clients clients;
         ChallengesInfo challengeInfo;
-        public ServerHelloHandler(Clients clients, ChallengesInfo challengeInfo) throws SocketException, IOException{
-            socket = new DatagramSocket(port);
+        VirtualChallenges virtualInfo;
+        HashMap<Integer, ServerComunication> coms;
+        public ServerHelloHandler(Clients clients, ChallengesInfo challengeInfo,VirtualChallenges virtualinfo,HashMap<Integer,ServerComunication> coms) throws SocketException, IOException{
+            this.socket = new DatagramSocket(this.port);
             this.clients = clients;
             this.challengeInfo= challengeInfo;
+            this.virtualInfo = virtualinfo;
+            this.coms = coms;
         }
         
+        @Override
         public void run(){
            while(true){
             try {
@@ -99,7 +113,7 @@ public class Server {
                   
                   
                   //inicia a thread do cliente no servidor
-                  new ClientHandler(firstLabel,threadPort,packet,clients,challengeInfo).start();
+                  new ClientHandler(firstLabel,threadPort,packet,clients,challengeInfo,virtualInfo,coms).start();
                   
                   //incrementa para proximo cliente
                   threadPort++;
@@ -117,4 +131,6 @@ public class Server {
         public WrongArgumentException() {
         }
     }
+
+   
 }

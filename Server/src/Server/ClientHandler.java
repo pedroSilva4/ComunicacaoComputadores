@@ -9,6 +9,7 @@ import Common.REPLY_Builder;
 import Common.UserChallenge;
 import Common.ChallengeType;
 import Common.PDU;
+import Common.PDU_Builder;
 import Common.Question;
 import Common.User;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,9 +44,13 @@ public class ClientHandler extends Thread{
     Clients clients;
     ChallengesInfo challengeInfo;    
     String challengeMorA = null;
+    VirtualChallenges virtualInfo;
+    HashMap<Integer,ServerComunication> coms;
    
     
-    public ClientHandler(int firstLabel,int port,DatagramPacket packet,Clients clients, ChallengesInfo challengeInfo) throws SocketException{
+    public ClientHandler(int firstLabel,int port,DatagramPacket packet,Clients clients, ChallengesInfo challengeInfo,
+                                                VirtualChallenges virtualinfo,HashMap<Integer,ServerComunication> coms) throws SocketException
+    {
         this.port = port;
         socket = new DatagramSocket(port);
         packetPort = packet.getPort();
@@ -52,6 +58,8 @@ public class ClientHandler extends Thread{
         this.currentLabel = firstLabel;
         this.clients = clients;
         this.challengeInfo=challengeInfo;
+        this.virtualInfo = virtualinfo;
+        this.coms = coms;
     }
     
     public void run(){
@@ -258,8 +266,23 @@ public class ClientHandler extends Thread{
                           socket.setSoTimeout(2500);
                           socket.receive(packet);
                           PDU endRequest = PDU.fromBytes(packet.getData());
+                          if(!challengeInfo.getUserChallenge(challengeMorA).isShared()){
+                              
+                                  challengeInfo.getUserChallenge(challengeMorA).finish();
+                                  
+                          }else{
+                              
+                                String username =  this.clients.loggedIn.get(port);
+                                String points = challengeInfo.getUserChallenge(challengeMorA).getPoints(port);
+                                new InformAll(
+                                        coms,
+                                        INFO_Builder.INFO_FINISHCHALLENGE(endRequest.getLabel(),challengeMorA,username,points)
+                                                
+                                ).start();
+                                
+                                challengeInfo.getUserChallenge(challengeMorA).finishSared(username, Integer.parseInt(points));
                           
-                          challengeInfo.getUserChallenge(challengeMorA).finish();
+                          }
                           
                           UserChallenge uch = challengeInfo.getUserChallenge(challengeMorA);
                         
@@ -268,14 +291,23 @@ public class ClientHandler extends Thread{
                                    sleep(100);
                                    System.out.print(".");
                                 }
-                          
-                          
-                          Collection<User> usersRankingByport = uch.getRanking();
-                          
                           String scores = "";
                           
-                          for(User u : usersRankingByport){
-                              scores+=this.clients.loggedIn.get(u.port)+" : "+u.points+"\n";
+                          if(!uch.isShared()){
+                                   Collection<User> usersRankingByport = uch.getRanking();
+                          
+                      
+                                   for(User u : usersRankingByport){
+                                        scores+=this.clients.loggedIn.get(u.port)+" : "+u.points+"\n";
+                                   }
+                          
+                          }
+                          else{
+                              Map<String, Integer> ranking = uch.getSharedRanking();
+                              
+                              for(String s :  ranking.keySet()){
+                                  scores+=s+" : "+ranking.get(s)+"\n";
+                              }
                           }
                           
                           PDU endReply  = REPLY_Builder.REPLY_SCOREALL(endRequest.getLabel(),scores );
@@ -393,22 +425,34 @@ public class ClientHandler extends Thread{
                     if(b){
                       this.challengeMorA = name;
                       int n_questions = this.challengeInfo.getUserChallenge(name).getChType().n_questions;
+                      
+                      new InformAll(coms, INFO_Builder.INFO_REGCHALLENGE(requestPDU.getLabel(),
+                                            this.challengeInfo.getUserChallenge(name)))
+                              .start();
+                      
+                      
                       return REPLY_Builder.REPLY_CHALLENGE(requestPDU.getLabel(), name,date,time,n_questions);
                       
                     }else 
                       return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "JA existe um Challenge com esse NOme");
                 }
-                case 9:{//acept challenge - (nome do desafio) - nao pode aceitar desafios dele proprio
+                case 9:{//accept challenge - (nome do desafio) - nao pode aceitar desafios dele proprio
                      
                      byte[][] fields= requestPDU.getData();
                     
                      String name = new String(fields[0]);
                         
                      boolean b = this.challengeInfo.accept_challenge(name,port);
-                     this.challengeMorA=name;
+                     
                      
                      if(!b) return REPLY_Builder.REPLY_ERRO(requestPDU.getLabel(), "Desafio não existe, ou ja esta a ser jogado");
-                    
+                     
+                     new InformAll(
+                             coms,
+                             INFO_Builder.INFO_ACCEPTCHALLENGE(requestPDU.getLabel(), this.clients.loggedIn.get(port), name)
+                            ).start();
+                     
+                     this.challengeMorA=name;
                      return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
                 }
                 case 10:{//delele challenge - (nome do desafio) - ou apaga o que é destinado, e o que fez.
