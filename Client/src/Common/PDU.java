@@ -121,4 +121,8 @@ public class PDU implements Serializable{
         
         return null;
     }
+    
+     public int getFields() {
+        return this.nFields;
+    }
 }

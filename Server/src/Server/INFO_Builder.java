@@ -96,7 +96,7 @@ public class INFO_Builder {
         
         }
         
-        return new PDU(0.0f, 0, 7, label, i+1, size, data, 0);
+        return new PDU(0.0f, 0, 7, label, i, size, data, 0);
         
     }
 }
