@@ -7,7 +7,7 @@ package Common;
 
 import Server.ChallengesInfo;
 import Server.Clients;
-import Server.VirtualChallenges;
+
 
 /**
  *
@@ -16,11 +16,10 @@ import Server.VirtualChallenges;
 public class ClassContainer {
    public Clients clients;
    public ChallengesInfo chinfo;
-   public VirtualChallenges virtualInfo;
-    
-    public ClassContainer( Clients clients, ChallengesInfo chinfo, VirtualChallenges virtualInfo){
+   
+    public ClassContainer( Clients clients, ChallengesInfo chinfo){
         this.clients = clients;
         this.chinfo = chinfo;
-        this.virtualInfo = virtualInfo;
+     
     }
 }

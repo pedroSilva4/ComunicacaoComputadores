@@ -10,7 +10,9 @@ import Common.UserChallenge;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -93,5 +95,18 @@ public class ChallengesInfo {
     public synchronized void putUserChallenge(UserChallenge us) {
         this.challenges.put(us.getName(), us);
         
+    }
+    
+    
+    public synchronized List<UserChallenge> getActiveChallenges(){
+        
+        List<UserChallenge> list = new ArrayList<>();
+        for(UserChallenge ch : this.challenges.values()){
+            if(ch.checkDate()){
+                list.add(ch);
+            }
+        }
+        
+        return list;
     }
 }

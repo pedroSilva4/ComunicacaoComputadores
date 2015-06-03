@@ -144,6 +144,17 @@ class ReceiverThread extends Thread{
             case 5:{
                 //
             }
+            
+            
+            case 7:{
+                int size = info.getFields();
+                byte data[][] = info.getData();
+                for(int i=0;i < size;i++){
+                    ParserInfo(PDU.fromBytes(data[i]));
+                }
+                
+                break;
+            }
         }
     }
 }

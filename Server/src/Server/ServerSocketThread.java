@@ -6,11 +6,13 @@
 package Server;
 
 import Common.ClassContainer;
+import Common.UserChallenge;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +48,22 @@ public class ServerSocketThread extends Thread{
                 ServerComunication coms = new ServerComunication(id,s,container);
                 sockets.put(id, coms );
                 id++;
+                
+                /*
+                pew pew stuff!!!!
+                */
+                
+                
+                List<UserChallenge> list = container.chinfo.getActiveChallenges();
+                
+                new Sender(s, INFO_Builder.INFO_SYNC(0, list)).start();
+                
+                
                 coms.startReceiver();
+                
+                
+                
+                
             } catch (IOException ex) {
                 Logger.getLogger(ServerSocketThread.class.getName()).log(Level.SEVERE, null, ex);
                 try {

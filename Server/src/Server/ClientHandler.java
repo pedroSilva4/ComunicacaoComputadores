@@ -44,12 +44,12 @@ public class ClientHandler extends Thread{
     Clients clients;
     ChallengesInfo challengeInfo;    
     String challengeMorA = null;
-    VirtualChallenges virtualInfo;
+   
     HashMap<Integer,ServerComunication> coms;
    
     
     public ClientHandler(int firstLabel,int port,DatagramPacket packet,Clients clients, ChallengesInfo challengeInfo,
-                                                VirtualChallenges virtualinfo,HashMap<Integer,ServerComunication> coms) throws SocketException
+                                                HashMap<Integer,ServerComunication> coms) throws SocketException
     {
         this.port = port;
         socket = new DatagramSocket(port);
@@ -58,7 +58,7 @@ public class ClientHandler extends Thread{
         this.currentLabel = firstLabel;
         this.clients = clients;
         this.challengeInfo=challengeInfo;
-        this.virtualInfo = virtualinfo;
+       
         this.coms = coms;
     }
     
