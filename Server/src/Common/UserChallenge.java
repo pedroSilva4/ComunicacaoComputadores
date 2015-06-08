@@ -11,12 +11,16 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 
 
 /**
@@ -43,8 +47,13 @@ public class UserChallenge {
         return this.isShared;
     }
     
-    public synchronized Map<String,Integer> getSharedRanking(){
-        return this.sharedRanking;
+    public synchronized TreeSet<Map.Entry<String,Integer>> getSharedRanking(){
+        
+       TreeSet<Map.Entry<String,Integer>> t = new TreeSet<>(new MapEntryComparator());
+      
+       t.addAll(sharedRanking.entrySet());
+       
+       return t;
     }
     
     public synchronized void setShared(){
@@ -178,4 +187,21 @@ public class UserChallenge {
    synchronized  public void setNusers(int n){
         nUsers = n;
    }
+
+    synchronized public void userQuittedShared() {
+       nUsers--;
+       this.notifyAll();
+    }
+    
+    
+   public static class MapEntryComparator implements Comparator<Map.Entry<String,Integer>>{
+
+        @Override
+        public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+            if(o1.getValue()> o2.getValue())
+                return -1;
+            else return 1;
+        }
+        
+    }
 }

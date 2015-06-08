@@ -5,9 +5,13 @@
  */
 package Server;
 
+import Common.UserChallenge;
+import Common.UserChallenge.MapEntryComparator;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  *
@@ -15,6 +19,7 @@ import java.util.Map;
  */
 public class Clients {
 
+   
     public class Client{
         String name;
         String nick;
@@ -79,4 +84,22 @@ public class Clients {
         this.ranking.replace(nick, p);
         return p;
     }
+    
+    synchronized public String getGeneralRanking() {
+        MapEntryComparator mapComp =new MapEntryComparator();
+        TreeSet<Map.Entry<String,Integer>> rankingl = new TreeSet<>(mapComp);
+        rankingl.addAll(this.ranking.entrySet());
+                              
+                             Iterator it = rankingl.iterator();
+                             String scores="";
+                             int i=1;
+                              while(it.hasNext()){
+                                   Map.Entry<String,Integer> entry =(Map.Entry<String,Integer>)it.next();
+                                   
+                                   scores+= i+"º :"+ entry.getKey()+" : "+entry.getValue()+"\n";     
+                                   i++;
+                              }
+                              return scores;
+    }
+
 }

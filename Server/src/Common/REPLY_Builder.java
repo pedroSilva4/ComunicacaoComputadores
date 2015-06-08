@@ -192,5 +192,14 @@ public class REPLY_Builder {
         size += data[20].length;
         return new PDU(0.0f, 0, 0,label, 1, size, data, 0);   
     }
+    
+    
+    public static PDU REPLY_RANKING(int label, String scores){
+        int size = 0;
+        byte data[][] = new byte[22][];
+        data[20] = scores.getBytes();
+        size += data[20].length;
+        return new PDU(0.0f, 0, 0,label, 1, size, data, 0);   
+    }
        
 }

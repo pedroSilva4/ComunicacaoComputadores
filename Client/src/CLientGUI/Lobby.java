@@ -99,6 +99,7 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         label_userInfo_nome = new javax.swing.JLabel();
         label_userInfo_score = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         bt_acceptChallenge = new javax.swing.JButton();
         bt_makeChallenge = new javax.swing.JButton();
         bt_removeChallenge = new javax.swing.JButton();
@@ -140,8 +141,16 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         ui_score.setText("Score:");
 
         label_userInfo_nome.setText("test");
+        label_userInfo_nome.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/user_info.png"))); // NOI18N
+
+        jButton1.setText("Ranking");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_user_infoLayout = new javax.swing.GroupLayout(panel_user_info);
         panel_user_info.setLayout(panel_user_infoLayout);
@@ -152,12 +161,15 @@ public class Lobby extends javax.swing.JFrame implements Observer{
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ui_nome)
-                    .addComponent(ui_score))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(label_userInfo_score, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(label_userInfo_nome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panel_user_infoLayout.createSequentialGroup()
+                        .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(ui_nome)
+                            .addComponent(ui_score))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(label_userInfo_score, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(label_userInfo_nome, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)))
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panel_user_infoLayout.setVerticalGroup(
@@ -165,17 +177,21 @@ public class Lobby extends javax.swing.JFrame implements Observer{
             .addGroup(panel_user_infoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
                     .addGroup(panel_user_infoLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(ui_nome)
                             .addComponent(label_userInfo_nome, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(ui_score)
-                            .addComponent(label_userInfo_score, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 16, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(panel_user_infoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panel_user_infoLayout.createSequentialGroup()
+                                .addGap(0, 9, Short.MAX_VALUE)
+                                .addComponent(label_userInfo_score, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panel_user_infoLayout.createSequentialGroup()
+                                .addComponent(ui_score)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
 
@@ -248,7 +264,7 @@ public class Lobby extends javax.swing.JFrame implements Observer{
                     .addComponent(button_list_challenges))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         pack();
@@ -261,6 +277,7 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         b.addObserver(this);
         this.gt = new GameThread(socket,b,this.user);
         new MakeChallenge(this, true,socket,label,this.gt).setVisible(true);
+        
         
         this.bt_makeChallenge.setEnabled(false);
         this.bt_acceptChallenge.setEnabled(false);
@@ -400,6 +417,28 @@ public class Lobby extends javax.swing.JFrame implements Observer{
         }
     }//GEN-LAST:event_bt_removeChallengeActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            // TODO add your handling code here:
+            PDU request = PDU_Builder.LIST_RANKING(label);
+            byte[] data = PDU.toBytes(request);
+            socket.send(new DatagramPacket(data, data.length));
+            
+            DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
+            socket.receive(packet);
+            request = PDU.fromBytes(packet.getData());
+            
+            
+            String ranking = new String(request.getData()[20]);
+            
+            new ErrorWindow("Ranking :",ranking, "message", new JFrame()).wshow();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
         private String parser(String date){
             
             String[] tokens = date.split(",");
@@ -480,6 +519,7 @@ public class Lobby extends javax.swing.JFrame implements Observer{
     private javax.swing.JButton bt_makeChallenge;
     private javax.swing.JButton bt_removeChallenge;
     private javax.swing.JButton button_list_challenges;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel label_listChallenges;

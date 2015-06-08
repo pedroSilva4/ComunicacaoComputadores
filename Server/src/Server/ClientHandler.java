@@ -27,7 +27,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,6 +106,9 @@ public class ClientHandler extends Thread{
                             if(challengeMorA!=null) 
                              {
                                  this.challengeInfo.getUserChallenge(challengeMorA).userLoggedOut(port);
+                                 new InformAll(coms,
+                                        INFO_Builder.INFO_QUIT(requestPDU.getLabel(),challengeMorA)
+                                ).start();
                                  challengeMorA = null;
                                  System.out.println("Challenge Cancelled for me!");
                                  try {                    
@@ -228,6 +234,12 @@ public class ClientHandler extends Thread{
                               System.out.println("jogador Desistiu!");
                               quitted= true;
                               this.challengeInfo.getUserChallenge(challengeMorA).userQuited(port);
+                              
+                               new InformAll(coms,
+                                        INFO_Builder.INFO_QUIT(answer.getLabel(),challengeMorA)
+                                ).start();
+                               
+                               challengeInfo = null;
                               break;
                           }
                           if(answer.getType()==11){
@@ -293,7 +305,7 @@ public class ClientHandler extends Thread{
                                 }
                           String scores = "";
                           
-                          if(!uch.isShared()){
+                         if(!uch.isShared()){
                                    Collection<User> usersRankingByport = uch.getRanking();
                           
                       
@@ -303,12 +315,19 @@ public class ClientHandler extends Thread{
                           
                           }
                           else{
-                              Map<String, Integer> ranking = uch.getSharedRanking();
+                              TreeSet<Map.Entry<String,Integer>> ranking = uch.getSharedRanking();
                               
-                              for(String s :  ranking.keySet()){
-                                  scores+=s+" : "+ranking.get(s)+"\n";
+                              Iterator it = ranking.iterator();
+      
+                              while(it.hasNext()){
+                                   Map.Entry<String,Integer> entry =(Map.Entry<String,Integer>)it.next();
+                                   
+                                   scores+= entry.getKey()+" : "+entry.getValue()+"\n";     
+                                   
                               }
-                          }
+
+                         
+                         }
                           
                           PDU endReply  = REPLY_Builder.REPLY_SCOREALL(endRequest.getLabel(),scores );
                           data = PDU.toBytes(endReply);
@@ -465,8 +484,15 @@ public class ClientHandler extends Thread{
                         UserChallenge uch = this.challengeInfo.getUserChallenge(name);
                         if(uch!=null){
                             if(uch.maker()==port){
-                                challengeMorA=null;
+                                
                                 uch.cancelCh();
+                                
+                                new InformAll(coms,
+                                        INFO_Builder.INFO_CANCELA(requestPDU.getLabel(),challengeMorA)
+                                ).start();
+                                
+                                challengeMorA=null;
+                                
                                 return REPLY_Builder.REPLY_OK(requestPDU.getLabel());
                             }
                         }
@@ -478,8 +504,9 @@ public class ClientHandler extends Thread{
                 }
                 case 13:{//list ranking - (sem parametros) - 
                     
+                    String rankingGeral = this.clients.getGeneralRanking();
                     
-                    return null;
+                    return REPLY_Builder.REPLY_RANKING(requestPDU.getLabel(), rankingGeral);
                 }
                 
                 

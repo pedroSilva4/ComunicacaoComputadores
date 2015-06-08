@@ -5,11 +5,13 @@
  */
 package Common;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Pedro
  */
-public class Question {
+public class Question implements Serializable{
       int question_n;
         public String question;
         public String[] answers  = new String[3];

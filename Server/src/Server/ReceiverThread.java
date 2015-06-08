@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -140,13 +141,22 @@ class ReceiverThread extends Thread{
             case 4:{
                 //send user points;
                 //#user ended
+                throw new NotImplementedException();
+                
             }
             case 5:{
-                //
+                //quit
+                 String name= new String(info.getData()[0]);
+                 this.container.chinfo.getUserChallenge(name).userQuittedShared();
             }
             
-            
+            case 6:{
+                String name= new String(info.getData()[0]);
+                this.container.chinfo.getUserChallenge(name).cancelCh();
+                break;
+            }
             case 7:{
+                //PDU especial so usado para casos pequenos de testes
                 int size = info.getFields();
                 byte data[][] = info.getData();
                 for(int i=0;i < size;i++){
