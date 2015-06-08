@@ -8,19 +8,15 @@ package Common;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 
 
 /**
@@ -92,11 +88,12 @@ public class UserChallenge {
     }
 
     synchronized public void setAcceptedInfo(int port) {
+              nUsers++;
               User u = new User();
               u.port = port;
               u.points=0;
               this.usersPlaying.put(port,u);
-              nUsers++;
+              
     }
     
     synchronized public void userLoggedOut(int port){

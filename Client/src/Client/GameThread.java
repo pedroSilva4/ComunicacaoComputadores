@@ -9,7 +9,6 @@ import CLientGUI.ErrorWindow;
 import CLientGUI.LoadChallengeProgressBar;
 import CLientGUI.Lobby;
 import CLientGUI.QuestionGUI;
-import CLientGUI.WaitOnPlayersPB;
 import Common.PDU_Builder;
 import Common.User;
 import Common.PDU;

@@ -5,18 +5,13 @@ import Common.ChallengeType;
 import Common.ClassContainer;
 import Common.PDU;
 import Common.UserChallenge;
-import Server.Clients.Client;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -30,8 +25,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 
 class ReceiverThread extends Thread{
-    int extraports = 1;
+  
      Socket sc;
+     int port;
     BufferedReader in; 
     DataInputStream dataIn;
      boolean isActive = true;
@@ -42,6 +38,7 @@ class ReceiverThread extends Thread{
              this.in =new BufferedReader(new InputStreamReader(sc.getInputStream()));
              this.dataIn = new DataInputStream(sc.getInputStream());
              this.container = container;
+             this.port = sc.getLocalPort();
          } catch (IOException ex) {
              Logger.getLogger(ReceiverThread.class.getName()).log(Level.SEVERE, null, ex);
          }
@@ -60,16 +57,19 @@ class ReceiverThread extends Thread{
                     byte[] data = new byte[size];
                     byte[] finaldata  =new byte[size];
                     int read = 0;
+                    System.err.println(read +":"+ size );
                     while(read < size){
-                        System.err.println(read +":"+ size );
+                       
                       int i = dataIn.read(data);
                       if(i==-1)break;
                       System.arraycopy(data, 0, finaldata, read, i);
                       read+=i;
                     } 
-
+                    System.err.println(read +":"+ size );
+                    
                     PDU request = PDU.fromBytes(finaldata);
                     
+                    port++;
                     ParserInfo(request);
                 System.out.println(new String(request.getData()[0]));
                 
@@ -126,8 +126,8 @@ class ReceiverThread extends Thread{
             case 2:{//accept
                 String nickname = new String(info.getData()[0]);
                 String name = new String(info.getData()[1]);
-                boolean us = this.container.chinfo.accept_challenge(name,extraports);
-                extraports++;
+                boolean us = this.container.chinfo.accept_challenge(name,port);
+               
                 this.container.chinfo.getUserChallenge(name).setShared();
                 break;
             }
@@ -140,14 +140,15 @@ class ReceiverThread extends Thread{
             }
             case 4:{
                 //send user points;
-                //#user ended
-                throw new NotImplementedException();
+                    break;
                 
             }
             case 5:{
                 //quit
                  String name= new String(info.getData()[0]);
                  this.container.chinfo.getUserChallenge(name).userQuittedShared();
+                 
+                 break;
             }
             
             case 6:{

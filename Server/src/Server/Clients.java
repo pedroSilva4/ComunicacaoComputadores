@@ -5,7 +5,6 @@
  */
 package Server;
 
-import Common.UserChallenge;
 import Common.UserChallenge.MapEntryComparator;
 import java.util.Arrays;
 import java.util.HashMap;

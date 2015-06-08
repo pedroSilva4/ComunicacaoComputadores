@@ -176,11 +176,13 @@ public class REPLY_Builder {
     
     static public PDU REPLY_LISTCHALLENGE(int label,int hasnext,ChallengesInfo info){
         int size = 0;
-        
-        byte[][] data  = info.getListChallenges();
-        if(data!=null){
+        byte[][] data = null;
+        if(info!=null){
+        data  = info.getListChallenges();
+          if(data!=null){
        
-        size = data.length;
+            size = data.length;
+            }
         }
         return new PDU(0.0f, 0, 0,label, 1, size, data, hasnext);
     }

@@ -6,13 +6,9 @@
 package CLientGUI;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.geom.*;
-import java.awt.image.*;
 import java.beans.*;
-import java.util.Random;
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.plaf.basic.*;
 
 public final class LoadChallengeProgressBar extends JPanel {

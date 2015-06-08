@@ -7,7 +7,6 @@ package CLientGUI;
 
 import Client.GameThread;
 import Common.PDU_Builder;
-import Common.User;
 import Common.PDU;
 import java.io.IOException;
 import java.net.DatagramPacket;
