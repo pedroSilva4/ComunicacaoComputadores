@@ -71,7 +71,7 @@ class ReceiverThread extends Thread{
                     
                     port++;
                     ParserInfo(request);
-                System.out.println(new String(request.getData()[0]));
+               
                 
                 //parser
                 

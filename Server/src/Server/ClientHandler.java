@@ -335,6 +335,11 @@ public class ClientHandler extends Thread{
                           System.out.println(this.clients.loggedIn.get(port)+" : "+this.challengeInfo.getUserChallenge(challengeMorA).getPoints(port));
                       } catch (IOException ex) {
                           Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                          if(challengeMorA!=null){
+                              this.challengeInfo.getUserChallenge(challengeMorA).userLoggedOut(port);
+                              
+                              new InformAll(coms, INFO_Builder.INFO_QUIT(0, challengeMorA)).start();
+                          }
                       } catch (InterruptedException ex) {
                           Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                       }
